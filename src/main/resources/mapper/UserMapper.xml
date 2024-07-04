@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.basic.user.UserMapper">
+
+<!-- parameterType: 매개변수에 파라미터타입 -->  <!-- resultType: 리턴타입 -->
+<select id="idCheck" parameterType="String" resultType="String">
+
+	SELECT 
+		user_id 
+	FROM 
+		user_tbl 
+	WHERE 
+		user_id = #{user_id}
+
+</select>
+
+<insert id="join" parameterType="com.docmall.basic.user.UserVo">
+
+	INSERT INTO 
+		user_tbl(user_id, user_pwd, user_name, user_email, user_zipcode, user_addr, user_deaddr, user_phone) 
+	VALUES
+		(#{user_id}, #{user_pwd}, #{user_name}, #{user_email}, #{user_zipcode}, #{user_addr}, #{user_deaddr}, #{user_phone}) <!-- getter 매서드가 작동됨 -->
+
+</insert>
+
+<select id="login" resultType="UserVo" parameterType="String">
+
+	SELECT
+		user_id, user_pwd, user_name, user_email, user_zipcode, user_addr, user_deaddr, user_phone, user_datesub, user_update
+	FROM
+		user_tbl
+	WHERE
+		user_id = #{user_id}
+
+</select>
+
+<select id="idfind" resultType="String" parameterType="map">
+	
+	SELECT 
+		user_id
+	FROM
+		user_tbl
+	WHERE
+	 	user_name = #{user_name}
+	AND
+		user_email = #{user_email}	
+
+</select>
+
+<select id="pwfind" resultType="String" parameterType="map">
+	SELECT
+		user_email
+	FROM
+		user_tbl
+	WHERE
+		user_id = #{user_id}
+	AND
+		user_name = #{user_name}
+	AND
+		user_email = #{user_email}
+
+</select>
+
+<update id="tempPwUpdate" parameterType="map">
+
+	UPDATE
+		user_tbl
+	SET
+		user_pwd = #{temp_enc_pw}
+	WHERE
+		user_id = #{user_id}
+
+</update>
+
+<delete id="delete" parameterType="String">
+
+DELETE FROM
+	user_tbl
+WHERE
+	user_id = #{user_id}
+
+</delete>
+
+<update id="modify" parameterType="UserVo">
+	
+	UPDATE
+		user_tbl
+	SET
+		user_email = #{user_email}, user_zipcode = #{user_zipcode}, user_addr = #{user_addr}, user_deaddr = #{user_deaddr}, user_phone = #{user_phone}
+	WHERE
+		user_id = #{user_id}
+
+</update>
+
+<update id="changePw" parameterType="String">
+
+	UPDATE
+	 	user_tbl
+	SET
+		user_pwd = #{new_user_pwd}
+	WHERE
+		user_id = #{user_id}
+
+
+
+
+</update>
+
+
+
+
+</mapper>

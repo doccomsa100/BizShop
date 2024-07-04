@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.basic.admin.membersinfo.MembersMapper">
+
+
+<!--  검색조건이 1)목록 2)총데이타 개수 공통사항 -->
+	<!-- 검색종류가 (상품명 또는 제조사 또는 내용) 선택.  "N"  "P"   "C" -->
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND" prefixOverrides="OR">
+			<foreach collection="typeArr" item="type">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'I'.toString()">
+							user_id like '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'N'.toString()">
+							user_name like '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'E'.toString()">
+							user_email like '%' || #{keyword} || '%'
+						</when>
+					</choose>
+				</trim>			
+			</foreach>
+		</trim>
+	</sql>
+
+<select id="member_list" resultType="com.docmall.basic.user.UserVo" parameterType="com.docmall.basic.common.dto.Criteria">
+
+	SELECT
+		user_id, user_pwd, user_name, user_email, user_zipcode, user_addr, user_deaddr, user_phone,user_datesub
+	FROM
+		(
+		SELECT /*+ INDEX_DESC(user_tbl PK_USER_ID) */
+			ROWNUM AS RN, user_id, user_pwd, user_name, user_email, user_zipcode, user_addr, user_deaddr, user_phone,user_datesub
+		FROM
+			user_tbl
+		WHERE
+		<include refid="criteria"></include>
+		<![CDATA[
+		ROWNUM <= (#{pageNum} * #{amount}) -- 페이지번호 * 페이지별 출력건수
+		]]>
+		)	
+		WHERE
+			RN > (#{pageNum} - 1) * #{amount} -- (페이지번호 -1) * 페이지별 출력건수
+</select>
+
+<select id="getTotalCount" resultType="int">
+
+	SELECT
+		COUNT(*)
+	FROM
+		user_tbl
+	WHERE
+		<include refid="criteria"></include>
+	1=1
+
+</select>
+
+<delete id="member_delete" parameterType="String">
+	
+	DELETE FROM
+		user_tbl
+	WHERE
+		user_id = #{user_id}
+
+</delete>
+
+
+
+
+
+
+
+</mapper>
