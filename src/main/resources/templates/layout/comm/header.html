@@ -15,8 +15,8 @@
           <a class="nav-link text-light" th:href="@{/user/join}">회원가입</a>
           </th:block>
           <a class="nav-link text-light" href="/user/mypages">내정보</a>
+          <a class="nav-link text-light" th:href="@{/cart/cart_list}">장바구니</a>
           
-          <a class="nav-link text-light" href="#">장바구니</a>
           <th:block th:if="${session.login_status != null}">
           <a class="nav-link text-light" href="#">주문상품조회</a>
           <a class="nav-link text-light" href="#">찜목록</a>

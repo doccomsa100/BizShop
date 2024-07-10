@@ -17,4 +17,6 @@ public interface ProductMapper {
 	
 	// 상품팝업
 	AdminProductVO pro_info(int pro_num);
+	
+	
 }

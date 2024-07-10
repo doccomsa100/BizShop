@@ -12,7 +12,7 @@ import lombok.ToString;
 public class CartVO {
 
 	// cart_num, pro_num, user_id, cart_amount, cart_date
-	private Integer cart_num;
+	private Integer cart_code;
 	private int     pro_num;
 	private String  user_id;
 	private int     cart_amount;

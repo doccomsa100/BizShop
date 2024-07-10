@@ -1,0 +1,192 @@
+
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/baseLayout}">
+  
+
+<th:block layout:fragment="css">
+	<style>
+		#pro_info ul {
+		  display: flex;
+		  justify-content: center;
+		  padding: 0;
+		}
+		#pro_info ul li {
+		  list-style: none;
+		}
+	  </style>
+	<!-- 각 페이지의 css -->
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+	<!-- 1) Include Handlebars from a CDN 사용목적 -->
+	<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script> <!--Handlebars사용이유: 단순이 화면에 보여주기위해 사용 -->
+
+	<script id="review-template" type="text/x-andlebars-template">
+	<table id="revtable" class="table">
+		<thead class="thead-dark">
+		  <tr>
+			<th scope="col">번호</th>
+			<th scope="col">제목</th>
+			<th scope="col">내용</th>
+			<th scope="col">평점</th>
+			<th scope="col">작성자</th>
+			<th scope="col">등록일</th>
+			<th scope="col">비고</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{{#each .}}
+		  <tr>
+			<th scope="row">{{rev_code}}</th>
+			<td>{{rev_title}}</td>
+			<td>{{rev_content}}</td>
+			<td>{{rev_rate}}</td>
+			<td>{{user_id}}</td>
+			<td>{{rev_date}}</td>
+			<td>비고</td>
+		  </tr>
+		  {{/each}}
+		</tbody>
+	  </table>
+
+	</script>
+</th:block>
+  <body>
+  
+
+
+<th:block layout:fragment="content">
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <h3 class="display-6" th:utext="${cat_name}"></h3>
+</div>
+<div class="container">
+      <div class="row">
+        <div class="col-6">
+			<img th:src="${'/product/image_display?dateFolderName=' + product.pro_up_folder + '&fileName=' + product.pro_img}" style="width: 100%;height: 500px;">
+        </div>
+        <div class="col-6">
+          	<form>
+		<div class="form-group">
+			<span id="info_pro_name" th:text="${product.pro_name}" class="font-weight-bold display-4"></span>
+		</div>
+		<hr>
+		<div class="form-group">
+			<small>(review : 0)</small>		
+		</div>
+		<hr>
+		<div class="form-group">
+	    	<label for="exampleFormControlInput1">판매가격: </label><span th:text="${#numbers.formatInteger(product.pro_price, 3, 'COMMA') + '원'}" class="font-weight-bold "></span>
+		</div>
+	    <hr>
+	    <div class="form-group">
+			<label class="font-weight-bold">수량</label>
+			<input type="number" class="form-control" value="1" id="btn_cart_amount">
+	    </div>
+	    <div class="form-group">
+			<button type="button" class="btn btn-primary btn-lg" th:data-pro_num="${product.pro_num}" id="btn_direct_order">바로구매</button>
+			<button type="button" class="btn btn-dark btn-lg" th:data-pro_num="${product.pro_num}" id="btn_cart_add">장바구니</button>
+	    </div>
+	</form>
+	</div>
+	</div>
+<div class="row">
+	<div class="col">
+		<div id="pro_info">
+			<ul> 
+			  <li><a href="#pro_detali">상세정보</a></li>
+			  <li><a href="#pro_review">상품리뷰(0)</a></li>
+			  <li><a href="#pro_inquiry">상품문의</a></li>
+			  <li><a href="#del_inquiry">배송문의</a></li>
+			</ul>
+			<div id="pro_detali">
+			  <p th:utext="${product.pro_content}"></p>
+			</div>
+			<div id="pro_review">
+			  <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+			</div>
+			<div id="pro_inquiry">
+			  <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+			  <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+			</div>
+			<div id="del_inquiry">
+				<p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+				<p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+			  </div>
+		  </div>
+	</div>
+</div>	
+	
+	
+	<div th:replace ="~{layout/comm/footer :: footerFragment}" ></div>
+</div>
+
+	
+
+	</th:block>
+	<!-- REQUIRED JS SCRIPTS -->
+	<th:block layout:fragment="script">
+	<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>	
+	<script th:inline="javascript">
+	$(document).ready(function() {
+	
+		$( function() {
+		    $( "#pro_info" ).tabs();
+		  } );
+		
+	// 장바구니 추가작업 model2 pro_info_2.html id="btn_cart_add"
+	$("#order_process_popup_2").on("click","button#btn_cart_add" ,function() {
+		
+		console.log("장바구니추가");
+
+		let pro_num = $(this).data("pro_num");
+		let cart_amount = $("#btn_cart_amount").val();
+
+		$.ajax({
+			url: '/cart/cart_add',
+			type: 'get',
+			data: {pro_num : pro_num, cart_amount : cart_amount},
+			datatype: "text",
+			success: function(result) {
+				if(result == "success") {
+					alert("장바구니에 등록되었습니다.");
+					if(confirm("장바구니로 이동하시겠습니까?")) {
+						location.href = "/cart/cart_list";
+					}
+					$("#order_process_popup_2").modal('hide');
+				}
+			}
+
+		});
+	});
+
+	// 상품후기와 페이징정보를 호출하는 작업
+	let reviewPage = 1;  // 상품 후기 페이지에서 첫 번째 페이지를 보여주기 위한 변수를 선언합니다.
+	
+	// 요청할 후기 목록의 URL을 구성하는 코드입니다.
+	// [[${product.pro_num}]]은 Thymeleaf 템플릿 엔진을 통해 서버 측에서 상품 번호(pro_num)를 가져와 URL에 포함시킵니다.
+	let url = "/review/revlist/" + [[${product.pro_num}]] + "/" + reviewPage;
+
+	// console.log("상품후기주소" ,url);
+
+	getReviewList(url);
+
+	function getReviewList(url) {
+
+		// $.getJSON() 함수를 사용하여 AJAX 요청을 보냅니다.
+		// 이 함수는 jQuery의 AJAX 함수 중 하나로, 서버에 GET 요청을 보내고 JSON 형식의 응답을 처리합니다.
+		// 요청이 성공하면 서버에서 반환한 JSON 데이터가 reviewlist 매개변수로 전달됩니다.
+		$.getJSON(url, function(reviewlist) {
+			console.log("reviewlist", reviewlist.revlist);
+			console.log("reviewlist", reviewlist.pageMaker);
+		});
+	}
+
+
+
+
+}); // ready event end
+	
+	
+	</script>
+	</th:block>
+	
+	  </body>
+	</html>

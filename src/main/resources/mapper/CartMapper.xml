@@ -13,16 +13,16 @@
 			SET cart_amount = cart_amount + #{cart_amount}
 	WHEN NOT MATCHED THEN
 		INSERT
-			(cart_num, pro_num,user_id,cart_amount)
+			(cart_code, pro_num,user_id,cart_amount)
 		VALUES
 			(SEQ_CART_TBL.NEXTVAL, #{pro_num}, #{user_id}, #{cart_amount})
 
 </insert>
 
-<select id="cart_list" parameterType="String" resultType="com.docmall.basic.cart.CartProductVO">
+<select id="cart_list" parameterType="String" resultType="CartProductVO">
 
 	SELECT
-		c.user_id,c.cart_code,p.pro_num,p.pro_name,p.pro_up_folder,p.pro_img,p.pro_price,p.pro_amount
+		c.user_id,c.cart_code,p.pro_num,p.pro_name,p.pro_up_folder,p.pro_img,p.pro_price,c.cart_amount
 	FROM
 		cart_tbl c
 	INNER
@@ -33,6 +33,36 @@
 		c.user_id = #{user_id}
 
 </select>
+
+<delete id="cart_delete" parameterType="Integer">
+	DELETE FROM
+		cart_tbl
+	WHERE
+		cart_code = #{cart_code}
+
+</delete>
+
+<update id="cart_change" parameterType="map">
+	UPDATE 
+		cart_tbl
+	SET
+		cart_amount = #{cart_amount}
+	WHERE
+		cart_code = #{cart_code}
+
+</update>
+
+
+<delete id="cart_empty" parameterType="String">
+
+	DELETE FROM
+		cart_tbl
+	WHERE
+		user_id = #{user_id}
+
+
+</delete>
+
 
 
 </mapper>

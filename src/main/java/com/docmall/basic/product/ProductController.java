@@ -68,4 +68,19 @@ public class ProductController {
 		
 		model.addAttribute("product", vo);
 	}
+	
+	// 상품살세정보
+	@GetMapping("/pro_detail")
+	public void pro_detail(int pro_num,Model model) throws Exception {
+		
+		AdminProductVO vo = productService.pro_info(pro_num);
+		vo.setPro_up_folder(vo.getPro_up_folder().replace("\\", "/"));
+		
+		model.addAttribute("product", vo);
+
+		
+	}
+	
+	
+	
 }
