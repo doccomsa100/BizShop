@@ -19,7 +19,7 @@
 	<!-- 1) Include Handlebars from a CDN 사용목적 -->
 	<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script> <!--Handlebars사용이유: 단순이 화면에 보여주기위해 사용 -->
 
-	<script id="review-template" type="text/x-andlebars-template">
+	<script id="review-template" type="text/x-handlebars-template">
 	<table id="revtable" class="table">
 		<thead class="thead-dark">
 		  <tr>
@@ -38,10 +38,10 @@
 			<th scope="row">{{rev_code}}</th>
 			<td>{{rev_title}}</td>
 			<td>{{rev_content}}</td>
-			<td>{{rev_rate}}</td>
+			<td>{{displayStar rev_rate}}</td>
 			<td>{{user_id}}</td>
-			<td>{{rev_date}}</td>
-			<td>비고</td>
+			<td>{{convertDate rev_date}}</td>
+			<td>{{authContorlview user_id rev_code}}</td>
 		  </tr>
 		  {{/each}}
 		</tbody>
@@ -58,7 +58,7 @@
   <h3 class="display-6" th:utext="${cat_name}"></h3>
 </div>
 <div class="container">
-      <div class="row">
+      <div class="row mb-5">
         <div class="col-6">
 			<img th:src="${'/product/image_display?dateFolderName=' + product.pro_up_folder + '&fileName=' + product.pro_img}" style="width: 100%;height: 500px;">
         </div>
@@ -75,6 +75,13 @@
 		<div class="form-group">
 	    	<label for="exampleFormControlInput1">판매가격: </label><span th:text="${#numbers.formatInteger(product.pro_price, 3, 'COMMA') + '원'}" class="font-weight-bold "></span>
 		</div>
+	    <div class="form-group">
+	    	<label for="exampleFormControlInput1">제조사: </label><span th:text="${product.pro_publisher}" class="font-weight-bold "></span>
+		</div>
+		<div class="form-group">
+			<small>배송비결제:</small><span><b>주문시 결제</b></span>		
+		</div>
+		
 	    <hr>
 	    <div class="form-group">
 			<label class="font-weight-bold">수량</label>
@@ -100,7 +107,11 @@
 			  <p th:utext="${product.pro_content}"></p>
 			</div>
 			<div id="pro_review">
-			  <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+				<button type="button" id="btn_review_modify" class="btn btn-dark mb-3">글쓰기</button>
+			  <div id="review_list"></div>
+			  <!-- 상품흐기 위치 -->
+			   <div id="review_paging"></div>
+			   <!--페이징 위치-->
 			</div>
 			<div id="pro_inquiry">
 			  <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
@@ -174,11 +185,144 @@
 		// 이 함수는 jQuery의 AJAX 함수 중 하나로, 서버에 GET 요청을 보내고 JSON 형식의 응답을 처리합니다.
 		// 요청이 성공하면 서버에서 반환한 JSON 데이터가 reviewlist 매개변수로 전달됩니다.
 		$.getJSON(url, function(reviewlist) {
-			console.log("reviewlist", reviewlist.revlist);
-			console.log("reviewlist", reviewlist.pageMaker);
+			// console.log("reviewlist", reviewlist.revlist);
+			// console.log("reviewlist", reviewlist.pageMaker);
+
+			print_reviewlist(reviewlist.revlist, $("#review_list"), $("#review-template"));
+			print_paging(reviewlist.pageMaker, $("#review_paging"));
 		});
 	}
+	
+	// 1) 상품후기 UI작업 : Handlebars 템플릿이용
+	let print_reviewlist = function(reviewData, target, template) { 
+		let templateObj = Handlebars.compile(template.html());  // Handlebars 템플릿 문자열을 컴파일합니다. template.html() 메서드는 템플릿 요소의 HTML 콘텐츠를 가져옵니다. Handlebars.compile 메서드는 이를 Handlebars 템플릿 함수로 컴파일합니다.
+		let reviewHtml = templateObj(reviewData); // 컴파일된 템플릿 함수(templateObj)를 사용하여 reviewData를 HTML로 렌더링합니다. 렌더링된 결과는 reviewHtml 변수에 저장됩니다.
+		target.children().remove(); // target 요소의 모든 자식 요소를 제거합니다. 이를 통해 기존 내용을 모두 지우고 새로운 내용을 추가할 준비를 합니다.
+		target.append(reviewHtml); // 렌더링된 HTML(reviewHtml)을 target 요소에 추가합니다. 이를 통해 화면에 리뷰 데이터를 표시합니다.
+	}
 
+	// 페이징 UI작업 : 로직으로 작업. Handlebars로는 작업이 힘듬
+	let print_paging = function(pageData,target) { // reviewData : pageMaker, target : review_paging
+		let str = '<nav aria-label="Page navigation example">';
+			str += '<ul class="pagination">';
+			
+		// 이전표시여부
+		if(pageData.prev) {
+			str += '<li class="page-item">';
+			str += `<a class="page-link" href="${pageData.startPage - 1}" aria-label="Previous">`
+			str += `<span aria-hidden="true">&laquo;</span>`;
+			str += `</a>`;
+		}
+
+		// 번호표시
+		for(let i=pageData.startPage; i <= pageData.endPage; i++) {
+			let className = pageData.cri.pageNum == i ? 'active' : '';
+			str += `<li class="page-item ${className}"><a class="page-link" href="${i}">${i}</a></li>`;
+		}
+
+		// 다움표시여부
+		if(pageData.next) {
+			str += '<li class="page-item">';
+			str += `<a class="page-link" href="${pageData.endPage + 1}" aria-label="Next">`
+			str += `<span aria-hidden="true">&raquo;</span>`;
+			str += `</a>`;
+		}
+
+
+		target.html(str);
+
+	}
+	
+	// 페이징 클릭 이벤트
+	$("#review_paging").on("click","nav ul.pagination a",function(e) {
+		e.preventDefault();
+		reviewPage = $(this).attr("href"); // 선택한 페이지번호값이 들어감
+
+		url = "/review/revlist/" + [[${product.pro_num}]] + "/" + reviewPage;
+		getReviewList(url);
+
+	});
+
+	// Handlebars함수: 날짜포맷
+	Handlebars.registerHelper("convertDate", function(rev_date) {
+		const d = new Date(rev_date);
+		let year = d.getFullYear();
+		let month = d.getMonth();
+		let date = d.getDate();
+		let hour = d.getHours();
+		let minutes = d.getMinutes();
+
+		return `${year}/${month}/${date} ${hour}:${minutes}`;
+	});
+
+	// Handlebars함수: 평점별표
+	Handlebars.registerHelper("displayStar", function(rating) {
+		let str = "";
+		switch(rating) {
+			case 1:
+				star = "★☆☆☆☆";
+				break;
+			case 2:
+				star = "★★☆☆☆";
+				break;
+			case 3:
+				star = "★★★☆☆";
+				break;
+			case 4:
+				star = "★★★★☆";
+				break;
+			case 5:
+				star = "★★★★★";
+				break;
+		}
+
+		return star;
+	});
+
+		// Handlebars함수: 작성자와로그인사용자가 일치되면 삭제,수정 표시
+		Handlebars.registerHelper("authContorlview", function(user_id, rev_code) {
+
+			let loginVo = /*[[ ${session.login_status} ]]*/;
+			// console.log(loginId);
+
+			let loginId = "";
+			if(loginVo !== null) {
+				loginId = /*[[${session.login_status == null ? '' : session.login_status.user_id}]]*/;
+			}
+
+
+			let str = "";
+			if(loginVo !== null && loginId == user_id) {
+				str += `<button type="button" name="btn_review_edit" class="btn btn-outline-primary" data-rev_code="${rev_code}">수정</button>`;
+				str += `<button type="button" name="btn_review_delete" class="btn btn-outline-danger" data-rev_code="${rev_code}">삭제</button>`
+				
+				return new Handlebars.SafeString(str); // 태그효과 적용을 위해 작성
+
+			}else {
+				return "";
+			}
+		});
+
+		// 상품후기 삭제
+		$("div#review_list").on("click", "button[name='btn_review_delete']", function() {
+			if(!confirm("삭제하시겠습니까?")) return;
+
+			let rev_code = $(this).data("rev_code");
+
+			$.ajax({
+				url: '/review/review_delete/' + rev_code,
+				headers: {
+					"Content-Type" : "application/json", "x-HTTP-Method-Override" : "DELETE"
+				},
+				type: 'delete',
+				datatype: 'text',
+				success: function(result) {
+					alert("상품후기가 삭제됨");
+					getReviewList(url);  // 상품후기목록, 페이징정보를 갱신
+				}
+
+			});
+		});
 
 
 

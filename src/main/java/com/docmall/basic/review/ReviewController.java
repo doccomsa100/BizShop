@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,4 +50,20 @@ public class ReviewController {
 		
 		return entity;
 	}
+	
+	// 상품후기 삭제
+	@DeleteMapping("/review_delete/{rev_code}")
+	public ResponseEntity<String> review_delete(@PathVariable("rev_code") Integer rev_code) throws Exception{
+		ResponseEntity<String> entity = null;
+		
+		log.info("상품리뷰코드: " + rev_code);
+		
+		reviewService.review_delete(rev_code);
+		entity = new ResponseEntity<String>("sueccss", HttpStatus.OK);
+		
+		
+		return entity;
+	}
+	
+	
 }

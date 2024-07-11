@@ -19,8 +19,13 @@ public class ReviewService {
 		return reviewMapper.rev_list(pro_num, cri);
 	}
 
-		// 후기 총개수
+	// 후기 총개수
 	public int getCountReviewBypro_num(Integer pro_num) {
 		return reviewMapper.getCountReviewBypro_num(pro_num);
+	}
+	
+	// 상품후기 삭제
+	public void review_delete(Integer rev_code) {
+		reviewMapper.review_delete(rev_code);
 	}
 }

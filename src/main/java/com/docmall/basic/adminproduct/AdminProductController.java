@@ -59,6 +59,7 @@ public class AdminProductController {
 	
 	}
 	
+	// 상품등록
 	@PostMapping("pro_insert")
 	public String pro_insertOk(AdminProductVO vo, MultipartFile uploadFile) throws Exception {
 		

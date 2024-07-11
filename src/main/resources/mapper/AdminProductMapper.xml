@@ -115,8 +115,9 @@
 				pro_price = #{box.pro_price},pro_buy = #{box.pro_buy}
 			WHERE
 				pro_num = #{box.pro_num}
-		</foreach>
+		</foreach> 
 	
 	</update>
+		
 
 </mapper>

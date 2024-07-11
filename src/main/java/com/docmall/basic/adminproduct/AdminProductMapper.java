@@ -26,5 +26,7 @@ public interface AdminProductMapper {
 	
 	// 체크상품 수정
 	void pro_check_box(List<AdminProductDTO> pro_box_modify);
+	
+	
 
 }
