@@ -46,9 +46,11 @@ public class ProductController {
 	});
 	
 	int totalCount = productService.getCountProductByCategory(cat_code);
+	PageDTO pageDTO = new PageDTO(cri, totalCount);
+	
 	
 	model.addAttribute("pro_list", pro_list);
-	model.addAttribute("pageMaker", new PageDTO(cri, totalCount));
+	model.addAttribute("pageMaker", pageDTO);
 	
 	}
 	

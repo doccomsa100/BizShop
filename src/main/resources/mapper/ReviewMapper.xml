@@ -36,6 +36,18 @@
 	
 	</select>
 	
+	<insert id="review_save" parameterType="ReviewVO">
+	
+		INSERT INTO
+			review_tbl(rev_code, user_id, pro_num, rev_content, rev_title, rev_rate)
+		VALUES
+			(SEQ_REVIEW_CODE.NEXTVAL, #{user_id}, #{pro_num}, #{rev_content}, #{rev_title}, #{rev_rate})
+	
+	</insert>
+	
+	
+	
+	
 	<delete id="review_delete" parameterType="Integer">
 		DELETE FROM
 			review_tbl

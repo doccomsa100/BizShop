@@ -14,6 +14,11 @@ public interface ReviewMapper {
 	// 후기 총개수
 	int getCountReviewBypro_num(Integer pro_num);
 	
+	// 상품후기 저장
+	void review_save(ReviewVO vo);
+	
 	// 상품후기 삭제
 	void review_delete(Integer rev_code);
+	
+	
 }

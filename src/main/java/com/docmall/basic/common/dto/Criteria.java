@@ -25,7 +25,7 @@ public class Criteria {
 	
 	// 매개변수가 있는 생성자
 	public Criteria(int pageNum, int amount) {
-		this.pageNum = pageNum;
+		this.pageNum = pageNum ;
 		this.amount = amount;
 		System.out.println("pageNum: " + pageNum + ", amount: " + amount);
 	}

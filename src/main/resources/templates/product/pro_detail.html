@@ -13,6 +13,19 @@
 		#pro_info ul li {
 		  list-style: none;
 		}
+		/* 별평점 기본선택지 */
+		p#star_rev_rate a.rev_rate {
+			font-size: 22px;
+			text-decoration:none;
+			color: lightgray;
+		}		
+
+		/* 별평점에 마우스 오버했을 경우 선택자 */
+		/* .on 옆에있는건 없어도 상관없다. */
+		p#star_rev_rate a.rev_rate.on {
+			color: red;
+		}
+
 	  </style>
 	<!-- 각 페이지의 css -->
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
@@ -24,6 +37,7 @@
 		<thead class="thead-dark">
 		  <tr>
 			<th scope="col">번호</th>
+			<th scope="col">이미지</th>
 			<th scope="col">제목</th>
 			<th scope="col">내용</th>
 			<th scope="col">평점</th>
@@ -36,6 +50,7 @@
 		{{#each .}}
 		  <tr>
 			<th scope="row">{{rev_code}}</th>
+			<td><img src="{{rev_img}}" alt="Review Image" style="width: 100px; height: auto;"></td>
 			<td>{{rev_title}}</td>
 			<td>{{rev_content}}</td>
 			<td>{{displayStar rev_rate}}</td>
@@ -107,7 +122,7 @@
 			  <p th:utext="${product.pro_content}"></p>
 			</div>
 			<div id="pro_review">
-				<button type="button" id="btn_review_modify" class="btn btn-dark mb-3">글쓰기</button>
+				<button type="button" id="btn_review_modal" class="btn btn-dark mb-3">글쓰기</button>
 			  <div id="review_list"></div>
 			  <!-- 상품흐기 위치 -->
 			   <div id="review_paging"></div>
@@ -129,13 +144,55 @@
 	<div th:replace ="~{layout/comm/footer :: footerFragment}" ></div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="review_modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">상품후기</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <form>
+		  <div class="form-group">
+			<label for="message-text" class="col-form-label">제목</label>
+			<input type="text" class="form-control" id="rev_title">
+			<input type="hidden" class="form-control" id="rev_code">
+		  </div>
+		  <div class="form-group">
+			<label for="message-text" class="col-form-label">내용</label>
+			<textarea class="form-control" id="rev_content"></textarea>
+		  </div>
+		  <div class="form-group">
+			<label for="recipient-name" class="col-form-label">별평점</label>
+			<p id="star_rev_rate">
+			  <a class="rev_rate" href="#">☆</a>
+			  <a class="rev_rate" href="#">☆</a>
+			  <a class="rev_rate" href="#">☆</a>
+			  <a class="rev_rate" href="#">☆</a>
+			  <a class="rev_rate" href="#">☆</a>
+			</p>
+		  </div>
+	   </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="btn_review_save" class="btn btn-primary" th:data-pro_num="${product.pro_num}" >상품후기저장</button>
+		<button type="button" id="btn_review_modify" class="btn btn-primary" th:data-pro_num="${product.pro_num}" >상품후기수정</button>
+      </div>
+    </div>
+  </div>
+</div>
 	
 
 	</th:block>
-	<!-- REQUIRED JS SCRIPTS -->
+
 	<th:block layout:fragment="script">
 	<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>	
 	<script th:inline="javascript">
+	
 	$(document).ready(function() {
 	
 		$( function() {
@@ -166,6 +223,18 @@
 			}
 
 		});
+	});
+
+	// 파일첨부시 이미지 미리보기
+	$("#uploadFile").on("change", function(e) {
+		let file = e.target.files[0];
+
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
+
+		reader.onload = function(e) {
+		$("#img_preview").attr("src", e.target.result);
+		}
 	});
 
 	// 상품후기와 페이징정보를 호출하는 작업
@@ -242,6 +311,74 @@
 		getReviewList(url);
 
 	});
+
+	$("#btn_review_modal").on("click", function(){
+		$("#btn_review_save").show();
+		$("#btn_review_modify").hide(); // 화면에 보이지 않게함
+		$("#review_modal").modal('show');
+	});
+
+	// 별평점 클릭
+	$("#star_rev_rate a.rev_rate").on("click", function(e){
+		e.preventDefault();
+		$(this).parent().children().removeClass("on"); // 부모 요소 아래의 모든 자식 요소의 'on' 클래스를 제거합니다.
+		$(this).addClass("on").prevAll("a").addClass("on"); // 클릭한 별점 요소에 'on' 클래스를 추가하고, 그 앞의 모든 형제 요소의 'on' 클래스도 추가합니다.
+	})
+
+	// 상품후기 저장
+	$("button#btn_review_save").on("click",function() {
+		let pro_num = $(this).data("pro_num");
+		// console.log(pro_num);
+
+		let rev_code = $("rev_code").val();
+		let rev_title = $("#rev_title").val();
+		let rev_content = $("#rev_content").val();
+		let rev_rate = 0; // 평균 기본값 0
+
+		$("#star_rev_rate a.rev_rate").each(function () {
+			if($(this).attr("class") == "rev_rate on") { // 현재 요소가 선택된(클래스에 on이 포함된) 별점 요소인지를 확인하는 조건입니다.
+				rev_rate += 1;
+			}
+		});
+
+		// 유효성검사
+		if(rev_title == "") {
+			alert("제목을 입력하세요.");
+			return;
+		}
+
+		if(rev_content == "") {
+			alert("내용을 입력하세요.");
+			return;
+		}
+
+		if(rev_rate == 0) {
+			alert("병평점을 입력하세요.");
+			return;
+		}
+
+		// 자바스크립트 object문법사용
+		let review_data = {pro_num : pro_num, rev_title : rev_title, rev_content : rev_content, rev_rate : rev_rate}
+
+		$.ajax({
+			url: '/review/review_save',
+			headers: {
+				"Content-Type" : "application/json", "x-HTTP-Method-Override" : "POST"
+			},
+			type: 'post',
+			data: JSON.stringify(review_data), // 자바스크립트 Object문법을 JSON으로 변환하는 작업
+			datatype: 'text',
+			success: function(result) {
+				alert("상품후기가 등록됨");
+				$("#review_modal").modal('hide');
+				getReviewList(url); // 상품후기목록과페이징정보를 갱신
+			}
+
+		});
+	});
+
+
+
 
 	// Handlebars함수: 날짜포맷
 	Handlebars.registerHelper("convertDate", function(rev_date) {
@@ -324,7 +461,9 @@
 			});
 		});
 
+		
 
+	
 
 }); // ready event end
 	

@@ -18,7 +18,7 @@ import lombok.ToString;
 
 );
 
--- rev_code, user_id, pro_num, rev_content, rev_title, rev_rate, rev_date
+-- rev_code, user_id, pro_num,pro_up_folder ,pro_img, rev_content, rev_title, rev_rate, rev_date
  */
 
 
