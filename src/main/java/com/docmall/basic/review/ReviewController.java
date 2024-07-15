@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.docmall.basic.adminproduct.AdminProductService;
@@ -97,11 +99,28 @@ public class ReviewController {
 		return entity;
 	}
 	
-	// 이미지출력
-	@GetMapping("/image_display")
-	public ResponseEntity<byte[]> image_display(String dateFolderName, String fileName) throws Exception {
+	// 상품후기 수정폼(json으로 넘어오기 때문에 폼작업은 아님)
+	@GetMapping("/rev_modify/{rev_code}")
+	public ResponseEntity<ReviewVO> rev_modify(@PathVariable("rev_code") Integer rev_cod) throws Exception {
+		ResponseEntity<ReviewVO> entity = null;
 		
-		return FileManagerUtils.getFile(uploadPath + dateFolderName, fileName);
+		entity = new ResponseEntity<ReviewVO>(reviewService.rev_modify(rev_cod), HttpStatus.OK);
+		
+		return entity;
+	}
+	
+	// 상품후기 수정저장
+	@PutMapping("/review_modify")
+	public ResponseEntity<String> review_modify(@RequestBody ReviewVO vo) throws Exception {
+		ResponseEntity<String> entity = null;
+		
+		log.info("리뷰저장데이터: " + vo);
+		
+		reviewService.save_reivew(vo);
+		entity = new ResponseEntity<String>("success", HttpStatus.OK);
+		
+		return entity;
+		
 	}
 	
 	

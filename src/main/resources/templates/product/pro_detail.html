@@ -37,7 +37,6 @@
 		<thead class="thead-dark">
 		  <tr>
 			<th scope="col">번호</th>
-			<th scope="col">이미지</th>
 			<th scope="col">제목</th>
 			<th scope="col">내용</th>
 			<th scope="col">평점</th>
@@ -50,7 +49,6 @@
 		{{#each .}}
 		  <tr>
 			<th scope="row">{{rev_code}}</th>
-			<td><img src="{{rev_img}}" alt="Review Image" style="width: 100px; height: auto;"></td>
 			<td>{{rev_title}}</td>
 			<td>{{rev_content}}</td>
 			<td>{{displayStar rev_rate}}</td>
@@ -179,8 +177,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" id="btn_review_save" class="btn btn-primary" th:data-pro_num="${product.pro_num}" >상품후기저장</button>
-		<button type="button" id="btn_review_modify" class="btn btn-primary" th:data-pro_num="${product.pro_num}" >상품후기수정</button>
+        <button type="button" id="review_save" class="btn btn-primary" th:data-pro_num="${product.pro_num}" >상품후기저장</button>
+		<button type="button" id="review_modify" class="btn btn-primary" th:data-pro_num="${product.pro_num}" >상품후기수정</button>
       </div>
     </div>
   </div>
@@ -313,8 +311,8 @@
 	});
 
 	$("#btn_review_modal").on("click", function(){
-		$("#btn_review_save").show();
-		$("#btn_review_modify").hide(); // 화면에 보이지 않게함
+		$("#review_save").show();
+		$("#review_modify").hide(); // 화면에 보이지 않게함
 		$("#review_modal").modal('show');
 	});
 
@@ -326,11 +324,11 @@
 	})
 
 	// 상품후기 저장
-	$("button#btn_review_save").on("click",function() {
+	$("button#review_save").on("click",function() {
 		let pro_num = $(this).data("pro_num");
 		// console.log(pro_num);
 
-		let rev_code = $("rev_code").val();
+		let rev_code = $("#rev_code").val();
 		let rev_title = $("#rev_title").val();
 		let rev_content = $("#rev_content").val();
 		let rev_rate = 0; // 평균 기본값 0
@@ -430,8 +428,8 @@
 
 			let str = "";
 			if(loginVo !== null && loginId == user_id) {
-				str += `<button type="button" name="btn_review_edit" class="btn btn-outline-primary" data-rev_code="${rev_code}">수정</button>`;
-				str += `<button type="button" name="btn_review_delete" class="btn btn-outline-danger" data-rev_code="${rev_code}">삭제</button>`
+				str += `<button type="button" name="review_edit" class="btn btn-outline-primary" data-rev_code="${rev_code}">수정</button>`;
+				str += `<button type="button" name="review_delete" class="btn btn-outline-danger" data-rev_code="${rev_code}">삭제</button>`
 				
 				return new Handlebars.SafeString(str); // 태그효과 적용을 위해 작성
 
@@ -441,7 +439,8 @@
 		});
 
 		// 상품후기 삭제
-		$("div#review_list").on("click", "button[name='btn_review_delete']", function() {
+		$("div#review_list").on("click", "button[name='review_delete']", function() {
+			
 			if(!confirm("삭제하시겠습니까?")) return;
 
 			let rev_code = $(this).data("rev_code");
@@ -461,7 +460,96 @@
 			});
 		});
 
-		
+		// 상품후기 수정폼(수정하는 작업을 보여주기위해)
+		$("div#review_list").on("click","button[name='review_edit']",function() {
+			let rev_code = $(this).data("rev_code");
+			
+
+
+			$.ajax({
+				url: '/review/rev_modify/' + rev_code,  // REST API
+				headers: {
+					"Content-Type" : "application/json", "x-HTTP-Method-Override" : "GET"
+				},
+				type: 'get',
+				dataType: 'json', // 스프링에서 넘어오는 데이터가 무슨타입인지 확인
+				success: function(result) { // result: 스프링에서 넘어오는 값 (상품후기 내용이 들어옴)
+					console.log(result);
+
+					// model 내용에 상품후기 출력작업
+					$("#rev_title").val(result.rev_title);
+					$("#rev_content").val(result.rev_content);
+					$("#rev_code").val(result.rev_code);
+
+					let rev_rate = result.rev_rate;
+
+					$("p#star_rev_rate a.rev_rate").each(function(indax,item){
+
+						if(indax < rev_rate) {
+							$(this).addClass("on");
+						}
+					}); 
+					// modal 보여주기
+					$("#review_save").hide();
+					$("#review_modify").show();
+					$("#review_modal").modal('show');
+					
+				}
+			});
+		});
+
+		// 상품후기 수정클릭
+		// 상품후기 저장
+	$("button#review_modify").on("click",function() {
+		let pro_num = $(this).data("pro_num");
+		// console.log(pro_num);
+
+		let rev_code = $("#rev_code").val();
+		let rev_title = $("#rev_title").val();
+		let rev_content = $("#rev_content").val();
+		let rev_rate = 0; // 평균 기본값 0
+
+		$("#star_rev_rate a.rev_rate").each(function () {
+			if($(this).attr("class") == "rev_rate on") { // 현재 요소가 선택된(클래스에 on이 포함된) 별점 요소인지를 확인하는 조건입니다.
+				rev_rate += 1;
+			}
+		});
+
+		// 유효성검사
+		if(rev_title == "") {
+			alert("제목을 입력하세요.");
+			return;
+		}
+
+		if(rev_content == "") {
+			alert("내용을 입력하세요.");
+			return;
+		}
+
+		if(rev_rate == 0) {
+			alert("병평점을 입력하세요.");
+			return;
+		}
+
+		// 자바스크립트 object문법사용
+		let review_data = {rev_code : rev_code, pro_num : pro_num, rev_title : rev_title, rev_content : rev_content, rev_rate : rev_rate}
+
+		$.ajax({
+			url: '/review/review_modify',
+			headers: {
+				"Content-Type" : "application/json", "x-HTTP-Method-Override" : "PUT"
+			},
+			type: 'put',
+			data: JSON.stringify(review_data), // 자바스크립트 Object문법을 JSON으로 변환하는 작업
+			datatype: 'text',
+			success: function(result) {
+				alert("상품후기가 수정됨");
+				$("#review_modal").modal('hide');
+				getReviewList(url); // 상품후기목록과페이징정보를 갱신
+			}
+
+		});
+	});
 
 	
 
