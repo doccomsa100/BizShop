@@ -38,6 +38,7 @@ public class ProductController {
 	@GetMapping("/pro_list")
 	public void pro_list(@ModelAttribute("cat_code") int cat_code, @ModelAttribute("cat_name") String cat_name, Criteria cri, Model model) throws Exception {
 		
+	cri.setAmount(6);
 		
 	List<AdminProductVO> pro_list = productService.pro_list(cat_code, cri);
 	// 클라이언트에 \를 /로 변환하여, model작업전에 처리함.  2024\07\01 -> 2024/07/01
