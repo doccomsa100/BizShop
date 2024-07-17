@@ -190,6 +190,11 @@
 
 		});
 	});
+	 // 장바구니 추가시 있던곳 URL저장
+	 $("button[name='btn_cart_add']").on("click", function() {
+	      let currentUrl = window.location.href;
+	      sessionStorage.setItem("lastVisitedUrl", currentUrl);
+	    });
 
 	}); // ready event end
 	

@@ -2,6 +2,8 @@ package com.docmall.basic.order;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.docmall.basic.cart.CartProductVO;
 import com.docmall.basic.cart.CartService;
 import com.docmall.basic.cart.CartVO;
+import com.docmall.basic.user.UserService;
 import com.docmall.basic.user.UserVo;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +29,8 @@ public class OrderController {
 	private final OrderService orderService;
 	
 	private final CartService cartService;
+	
+	private final UserService userService;
 	
 	
 	@GetMapping("/productorder")
@@ -54,5 +59,16 @@ public class OrderController {
 		model.addAttribute("pro_total", pro_total);
 		return "/order/productorder";
 	
+	}
+	
+	@GetMapping("/orderagree")
+	public ResponseEntity<UserVo> orderagree(HttpSession session) throws Exception {
+		ResponseEntity<UserVo> entity = null;
+		
+		String user_id = ((UserVo) session.getAttribute("login_status")).getUser_id();
+		
+		entity = new ResponseEntity<UserVo>(userService.login(user_id), HttpStatus.OK);
+		
+		return entity;
 	}
 }
