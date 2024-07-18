@@ -46,12 +46,15 @@ public class ProductController {
 		vo.setPro_up_folder(vo.getPro_up_folder().replace("\\", "/"));   
 	});
 	
-	int totalCount = productService.getCountProductByCategory(cat_code);
-	PageDTO pageDTO = new PageDTO(cri, totalCount);
-	
-	
 	model.addAttribute("pro_list", pro_list);
-	model.addAttribute("pageMaker", pageDTO);
+	
+	// 상품이 없을때 페이징을 보이지 않게 하기 위해
+	if(!pro_list.isEmpty()) {
+		int totalCount = productService.getCountProductByCategory(cat_code);
+		PageDTO pageDTO = new PageDTO(cri, totalCount);
+		model.addAttribute("pageMaker", pageDTO);
+	}
+	
 	
 	}
 	
@@ -72,7 +75,7 @@ public class ProductController {
 		model.addAttribute("product", vo);
 	}
 	
-	// 상품살세정보
+	// 상품상세정보
 	@GetMapping("/pro_detail")
 	public void pro_detail(int pro_num,Model model) throws Exception {
 		

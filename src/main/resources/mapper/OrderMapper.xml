@@ -21,9 +21,9 @@
 	<insert id="orderDetail_insert" parameterType="map">
 	
 		INSERT INTO
-			order_det_tbl(order_det_num, pro_num, item_amount, item_price)
+			order_det_tbl(order_num, pro_num, item_amount, item_price)
 		SELECT
-			#{order_det_num},pro_num,item_amount,pro_num*item_amount
+			#{order_num},pro_num,item_amount,pro_num*item_amount
 		FROM
 			cart_tbl
 		WHERE

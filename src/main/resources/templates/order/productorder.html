@@ -69,7 +69,7 @@
 			  <div class="card-header">
 			  <h3 class="card-title">주문정보(배송) 입력</h3>
 			  </div>
-		  <form class="form-horizontal" id="orderForm" action="" method="post">
+		  <form class="form-horizontal" id="orderForm" action="/order/ordernobankok" method="post">
 		  <div class="card-body">
 			  <div class="form-group form-check">
 			  <input type="checkbox" class="form-check-input" id="ordersame">
@@ -332,6 +332,37 @@
 			$("input#sample2_detailAddress").val("");
 		}
    });
+
+   // 주문및결제하기
+   $("button#btn_order_payment").on("click",function() {
+	
+	// 체크가 되어있는게 카카오인지 무통장인지 확인하고 paymethod에 넣음
+	let paymethod = $("input[name='paymethod']:checked").val();
+
+	//console.log("paymethod", paymethod);
+	//return;
+
+	if(paymethod == "nobank") {
+		let orderForm = $("#orderForm");
+		orderForm.submit();
+	
+	}else if(paymethod == "kakaopay") {
+		$.ajax({
+			url: '/kakao/kakaoPay',
+			type: 'get',
+			data: {
+				order_name: $("#order_name").val(), order_pho:$("#order_pho").val(),order_zipcode:$("#sample2_postcode").val(),order_addr:$("#sample2_address").val(),order_deaddr:$("#sample2_detailAddress").val(), order_price:$("#order_price").val(),order_req:$("#order_req").val()  
+			},
+			dataType: 'json',
+			success: function(response) {
+				console.log("응답: " + response);
+
+				alert("결제페이지로 넘어갑니다.");
+				location.href = response.next_redirect_pc_url; // 카카오 결제QR코드 주소이동
+			}
+		});
+	}
+});
 
 
 	}); // ready event end

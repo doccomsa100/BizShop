@@ -83,6 +83,27 @@ public class KakaopayController {
 		String approveResponse = kakaopayService.approve(pg_token);
 		
 		log.info("최종결과: " + approveResponse);
+		
+		// 트랜잭션으로 처리: 주문테이블, 주문상세테이블, 결제테이블, 장바구니 비우기
+		if(approveResponse.contains("aid")) { // aid : 성공적으로 넘어왔을때 발생하는 키값
+			log.info("주문자정보2: " + vo);
+			orderService.order_process(vo, user_id, "kakaopay", "완료", "kakaopay");
+		}
+		log.info("최종결과: " + approveResponse);
 	}
+	
+	// 취소
+	@GetMapping("/cancel")
+	public void cancel() {
+		
+		
+	}
+	
+	// 실패
+	@GetMapping("/fail")
+	public void fail() {
+		
+			
+		}
 	
 }

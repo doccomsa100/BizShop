@@ -22,6 +22,7 @@ public class OrderService {
 	
 	private final UserPayMapper userPayMapper;
 	
+	// @Transactional: 하나의 단위로 여러개를 할려면 이거 넣으면됨 (원래는 데이터베이스기능임)
 	@Transactional
 	public void order_process(OrderVO vo, String user_id, String paymethod, String pay_status, String payinfo) {
 		

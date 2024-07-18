@@ -121,10 +121,12 @@
 			</div>
 			<div id="pro_review">
 				<button type="button" id="btn_review_modal" class="btn btn-dark mb-3">글쓰기</button>
-			  <div id="review_list"></div>
+			  <div id="review_list">
 			  <!-- 상품흐기 위치 -->
-			   <div id="review_paging"></div>
+			  </div>
+			   <div id="review_paging">
 			   <!--페이징 위치-->
+			   </div>
 			</div>
 			<div id="pro_inquiry">
 			  <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
@@ -551,16 +553,17 @@
 		});
 	});
 
-	// 바로구매
-	$("button#btn_direct_order").on("click", function() {
-		// console.log("바로구매")
+	// 바로구매 id="btn_direct_order"
+	$("#btn_direct_order").on("click",function() {
+		console.log("바로구매");
 		
 		let cart_amount = $("#btn_cart_amount").val();
 		let pro_num = $(this).data("pro_num");
 		let url = `/order/productorder?pro_num=${pro_num}&cart_amount=${cart_amount}`;
-	
+
 		location.href = url;
-	});
+
+		});
 	
 
 }); // ready event end
