@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class KakaopayService {
 
 	@Value("${kakaopay.api.secret.key}")
@@ -79,7 +82,7 @@ public class KakaopayService {
     }
     
     // 2) 결제승인요청
-    public String approve(String pgToken) {
+    public String approve(String pgToken) { // pgToken: 카카오페이에서 제공하는 결제 승인을 위한 토큰
     	
     	// 1) Request header
     	HttpHeaders headers = new HttpHeaders();
@@ -99,11 +102,17 @@ public class KakaopayService {
     	HttpEntity<ApproveRequest> entityMap = new HttpEntity<ApproveRequest>(approveRequest, headers);
     	try {
     		ResponseEntity<String> response = new RestTemplate().postForEntity(
-    				"http://open-api.kakaopay.com/online/v1/payment/approve",
+    				"https://open-api.kakaopay.com/online/v1/payment/approve",
     				entityMap,
     				String.class);
+    		// 승인 결과를 저장한다.
+            // save the result of approval
     		String approveResponse = response.getBody();
+    		
+    		log.info(approveResponse);
+    		
     		return approveResponse;
+    		
     	}catch(HttpStatusCodeException ex) {
     		return ex.getResponseBodyAsString();
     	}

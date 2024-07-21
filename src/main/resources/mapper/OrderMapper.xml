@@ -7,7 +7,7 @@
 		<selectKey keyProperty="order_num" resultType="Long" order="BEFORE">
 			
 			SELECT
-				SEQ_ORDER_NUM
+				SEQ_ORDER_NUM.NEXTVAL
 			FROM
 				dual
 		</selectKey>
@@ -23,13 +23,11 @@
 		INSERT INTO
 			order_det_tbl(order_num, pro_num, item_amount, item_price)
 		SELECT
-			#{order_num},pro_num,item_amount,pro_num*item_amount
+			#{order_num},pro_num,cart_amount,pro_num*cart_amount
 		FROM
 			cart_tbl
 		WHERE
 			user_id = #{user_id}
-	
-	
 	
 	</insert>
 

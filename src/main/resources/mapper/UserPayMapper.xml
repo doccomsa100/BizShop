@@ -9,5 +9,17 @@
 			(SEQ_PAYINFO_ID.NEXTVAL, #{order_num},#{user_id},#{paymethod},#{payinfo},#{pay_price},#{pay_status})
 	
 	</insert>
+	
+	<select id="order_pay_info" parameterType="Long" resultType="UserPayVO">
+		
+	SELECT	
+		pay_id, order_num, user_id, paymethod, payinfo, pay_price, pay_status,pay_date
+	FROM
+		userpay
+	WHERE
+		order_num = #{order_num}	
+	
+	
+	</select>
 
 </mapper>

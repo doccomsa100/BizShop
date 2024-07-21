@@ -11,4 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserPayService {
 
 	private final UserPayMapper userPayMapper;
+	
+	// 결제정보 보기
+	public UserPayVO order_pay_info(Long order_num) {
+		return userPayMapper.order_pay_info(order_num);
+	}
 }

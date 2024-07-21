@@ -267,9 +267,34 @@
 				$("#nobank_info").hide();
 			}
 		})
-		
-	// 2) <button type="button" class="btn btn-info" id="btnJoin">Sign up</button> - click이벤트 사용.
-	$("#btn_order_payment").on("click", function() {
+
+   // 주문자와 동일하면 정보를 그대로 작성해줌
+   $("input#ordersame").on("click",function() {
+		if($("input#ordersame").is(":checked")) { // 현재 선택한 선택자가 체크가 되어있으면 True 아니면 False
+
+			$.ajax({
+				url: '/order/orderagree',
+				type: 'get',
+				dataType: 'json',
+				success: function(result) {
+					$("input#order_name").val(result.user_name);
+					$("input#order_pho").val(result.user_phone);
+					$("input#sample2_postcode").val(result.user_zipcode);
+					$("input#sample2_address").val(result.user_addr);
+					$("input#sample2_detailAddress").val(result.user_deaddr);
+				}
+			});
+		}else {
+			$("input#order_name").val("");
+			$("input#order_pho").val("");
+			$("input#sample2_postcode").val("");
+			$("input#sample2_address").val("");
+			$("input#sample2_detailAddress").val("");
+		}
+   });
+
+   // 주문및결제하기
+   $("button#btn_order_payment").on("click",function() {
 
 	   // 이름 검증
 	   if ($("#order_name").val().trim() === "") {
@@ -305,36 +330,6 @@
 		   $("#sample2_detailAddress").focus();
 		   return false;
 	   }
-
-   });
-
-   // 주문자와 동일하면 정보를 그대로 작성해줌
-   $("input#ordersame").on("click",function() {
-		if($("input#ordersame").is(":checked")) { // 현재 선택한 선택자가 체크가 되어있으면 True 아니면 False
-
-			$.ajax({
-				url: '/order/orderagree',
-				type: 'get',
-				dataType: 'json',
-				success: function(result) {
-					$("input#order_name").val(result.user_name);
-					$("input#order_pho").val(result.user_phone);
-					$("input#sample2_postcode").val(result.user_zipcode);
-					$("input#sample2_address").val(result.user_addr);
-					$("input#sample2_detailAddress").val(result.user_deaddr);
-				}
-			});
-		}else {
-			$("input#order_name").val("");
-			$("input#order_pho").val("");
-			$("input#sample2_postcode").val("");
-			$("input#sample2_address").val("");
-			$("input#sample2_detailAddress").val("");
-		}
-   });
-
-   // 주문및결제하기
-   $("button#btn_order_payment").on("click",function() {
 	
 	// 체크가 되어있는게 카카오인지 무통장인지 확인하고 paymethod에 넣음
 	let paymethod = $("input[name='paymethod']:checked").val();

@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
-@RequestMapping("/kakapay/*")
+@RequestMapping("/kakao/*")
 @RequiredArgsConstructor
 public class KakaopayController {
 
