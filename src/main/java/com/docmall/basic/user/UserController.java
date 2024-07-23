@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.docmall.basic.kakaoLogin.KakaoUserInfo;
 import com.docmall.basic.mail.EmailDTO;
 import com.docmall.basic.mail.EmailService;
 
@@ -241,14 +242,25 @@ public class UserController {
 		
 		// 세션에서 login_status라는 이름으로 저장된 사용자 정보를 가져옵니다. 
 		// 이 정보는 UserInfoVO 객체로 캐스팅된 후, 사용자 아이디(u_id)를 추출합니다.
-		String user_id = ((UserVo)session.getAttribute("login_status")).getUser_id();
+		if(session.getAttribute("login_status") != null) {
+			String user_id = ((UserVo)session.getAttribute("login_status")).getUser_id();
+			// user_id를 이용해 데이터베이스에서 사용자 정보를 가져옵니다.
+			// userService.login(user_id) 메서드는 user_id에 해당하는 사용자 정보를 반환합니다.
+			UserVo vo = userService.login(user_id);
+			// 사용자 정보를 userpage라는 이름으로 모델에 추가합니다. 이렇게 추가된 정보는 타임리프 페이지에서 사용할 수 있습니다.
+			model.addAttribute("userpage", vo);
+		}else if(session.getAttribute("kakao_status") != null) {
+			KakaoUserInfo kakaoUserInfo = (KakaoUserInfo) session.getAttribute("kakao_status");
 		
-		// user_id를 이용해 데이터베이스에서 사용자 정보를 가져옵니다.
-		// userService.login(user_id) 메서드는 user_id에 해당하는 사용자 정보를 반환합니다.
-		UserVo vo = userService.login(user_id);
-		
-		// 사용자 정보를 userpage라는 이름으로 모델에 추가합니다. 이렇게 추가된 정보는 타임리프 페이지에서 사용할 수 있습니다.
-		model.addAttribute("userpage", vo);
+			// MyPage에서 보여줄 정보를 선택적으로 작업.
+			UserVo vo = new UserVo();
+			vo.setUser_name(kakaoUserInfo.getNickname());
+			vo.setUser_email(kakaoUserInfo.getEmail());
+
+			model.addAttribute("userpage", vo);
+			model.addAttribute("msg", "kakao_login");
+
+		}
 		
 	}
 	

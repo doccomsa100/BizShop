@@ -31,7 +31,14 @@ public interface UserMapper {
 	// 비밀번호 변경
 	void changePw(@Param("user_id") String user_id,@Param("new_user_pwd") String new_user_pwd);
 	
-
+	// 어느 api로 로그인한지 확인
+	String existsUserInfo(String sns_email);
+	
+	// sns user 중복체크
+	String sns_user_check(String sns_email);
+	
+	// 입력값 삽입
+	void sns_user_insert(SNSUserDto dto);
 
 
 }

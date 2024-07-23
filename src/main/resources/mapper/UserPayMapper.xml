@@ -21,5 +21,19 @@
 	
 	
 	</select>
+	
+	<update id="pay_tot_price_change" parameterType="Long">
+	
+		UPDATE
+			userpay
+		SET
+			pay_price = (
+						SELECT SUM(item_amount * item_price) FROM order_det_tbl WHERE order_num = #{order_num}
+						)
+		WHERE
+			order_num = #{order_num}
+	
+	
+	</update>
 
 </mapper>

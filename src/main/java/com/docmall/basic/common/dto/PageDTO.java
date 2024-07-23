@@ -57,5 +57,12 @@ public class PageDTO {
 		this.prev = this.startPage > 1;
 		// 조건이 true면 [다음]표시
 		this.next = this.endPage < realEnd;
+		
+		/*
+		if(total == 0) {
+			startPage = 0;
+			endPage = 0;
+		}
+		*/
 	}
 }

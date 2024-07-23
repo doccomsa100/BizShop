@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.docmall.basic.common.dto.Criteria;
@@ -38,17 +40,21 @@ public class AdminOrderController {
 	
 	// 주문리스트 
 	@GetMapping("/order_list")
-	public void order_list(Criteria cri, Model model) throws Exception {
+	public void order_list(Criteria cri,
+			@ModelAttribute("start_date") String start_date, 
+			@ModelAttribute("end_date") String end_date
+			,Model model) throws Exception {
 		
 		log.info("Criteria" +cri);
+		cri.setAmount(5);
 		
 		// 주문리스트
-		List<OrderVO> order_list = adminOrderService.order_list(cri);
+		List<OrderVO> order_list = adminOrderService.order_list(cri,start_date,end_date);
 		
 		log.info("order_list" + order_list);
 		
 		// 주문리스트 총새수
-		int total = adminOrderService.getTotalCount(cri);
+		int total = adminOrderService.getTotalCount(cri,start_date,end_date);
 		
 		log.info("pagedto" + new PageDTO(cri, total));
 		
@@ -94,7 +100,29 @@ public class AdminOrderController {
 		
 	}
 	
+	// 주문개별삭제
+	@GetMapping("/order_individual_delete")
+	public ResponseEntity<String> order_individual_delete(Long order_num, int pro_num) throws Exception{
+		ResponseEntity<String> entity = null;
+		
+		// db연동
+		adminOrderService.order_individual_delete(order_num, pro_num);
+		
+		entity = new ResponseEntity<String>("success",HttpStatus.OK);
+		return entity;
+	}
 	
+	// 기본 주문(수령)정보 수정하기
+	@PostMapping("/order_base_modify")
+	public ResponseEntity<String> order_base_modify(OrderVO vo) throws Exception {
+		ResponseEntity<String> entity = null;
+		
+		// db연동
+		adminOrderService.order_base_modify(vo);
+		
+		entity = new ResponseEntity<String>("success",HttpStatus.OK);
+		return entity;
+	}
 	
 	
 	

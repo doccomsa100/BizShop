@@ -4,10 +4,7 @@ This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout/adminlayout}">
-  <head>
-    
-    
-  </head>
+  
   <!--
   BODY TAG OPTIONS:
   =================
@@ -67,7 +64,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 			      <td>{{item_amount}}</td>
 			      <td>{{unit_order_tot_price item_price item_amount}}</td>
 			      <th scope="col">
-					<button type="button" class="btn btn-danger" data-pro_num="{{pro_num}}">delete</button>
+					<button type="button" name="order_delete_pro" class="btn btn-danger" data-pro_num="{{pro_num}}">삭제</button>
 				</th>
 			    </tr>
 				{{/each}}
@@ -108,15 +105,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
 						<div>
 							<form action="/admin/order/order_list" method="get" >
 									<select name="type">
-										<option selected>검색종류선택</option>
-										<option value="N">주문자이름</option>
-										<option value="O">주문코드</option>
-										<option value="U">사용자아이디</option>
-										<option value="NO">주문자이름 or 주문코드</option>
+										<option selected th:selected="${''} == ${pageMaker.cri.type}">검색종류선택</option>
+										<option value="N" th:selected="${'N'} == ${pageMaker.cri.type}">주문자이름</option>
+										<option value="O" th:selected="${'O'} == ${pageMaker.cri.type}">주문코드</option>
+										<option value="U" th:selected="${'U'} == ${pageMaker.cri.type}">사용자아이디</option>
+										<option value="NO" th:selected="${'NO'} == ${pageMaker.cri.type}">주문자이름 or 주문코드</option>
 									</select>
-									<input type="text" name="keyword" th:value="${pageMaker.cri.keyword}" />
-									<input type="hidden" name="pageNum" th:value="${pageMaker.cri.pageNum}" />
-									<input type="hidden" name="amount" th:value="${pageMaker.cri.amount}" />
+									<input type="text" name="keyword" th:value="${pageMaker.cri.keyword}">
+									<input type="hidden" name="pageNum" th:value="${pageMaker.cri.pageNum}">
+									<input type="hidden" name="amount" th:value="${pageMaker.cri.amount}">
+									<b>날짜검색:</b>
+										<input type="date" name="start_date"> ~ <input type="date" name="end_date">
 									<button type="submit" class="btn btn-primary">검색</button>
 							</form>
 						</div>
@@ -214,8 +213,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	  <div class="modal-dialog modal-lg">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h4 class="modal-title" id="staticBackdropLabel2">상세정보</h4>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	        <h3 class="modal-title" id="staticBackdropLabel2"><b>상세정보</b></h3>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeButton">
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 		  </div>
@@ -265,6 +264,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 			      <th scope="col">수령인</th>
 			      <td scope="col">
 			      <input type="text" id="order_name" name="order_name">
+				  <input type="hidden" id="user_id" name="user_id">
 			      </td>
 			      <th scope="col">전화번호</th>
 			      <td scope="col">
@@ -295,9 +295,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 			<h3><b>관리자메모</b></h3>
 			</blockquote>
 				<blockquote>
-				<textarea rows="3" cols="80">관리자내용</textarea>
+				<textarea rows="3" cols="80" id="order_admin_memo">관리자내용</textarea>
 				</blockquote>
-		</div>
+				<blockquote>
+				<button type="button" id="btn_base_modify" class="btn btn-dark">수정완료</button>
+				</blockquote>	
+			</div>
 		
  	  </div>
    </div>
@@ -418,7 +421,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $(document).ready(function() {
         
         let actionForm = $("#actionForm");
+		let order_num; // 전역변수 뺌
         
+		// 페이지번호 클릭시(이전  1  2  3  4  5  다음) actionForm 을 사용한다.
         $(".movepage").on("click", function(e) {
 			e.preventDefault();   // a태그의 href기능 제거
 			// 주소변경
@@ -434,9 +439,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         
         // 상세보기 클릭
         $("button[name='btn_order_info']").on("click", function() {
-			let order_num = $(this).data("order_num");
-        	
-			$("#order_ditail_info").modal('show');
+			order_num = $(this).data("order_num"); // 전역변수에 할당
+        	order_detail_info();
+			
+		});
+
+	function order_detail_info() {	
+		$("#order_ditail_info").modal('show');
 			
 			$.ajax({
 				url: '/admin/order/order_detail_info',
@@ -463,17 +472,71 @@ scratch. This page gets rid of all links and provides the needed markup only.
 					$("#user_id").val(result.payinfo.user_id);
 					$("#payinfo").val(result.payinfo.payinfo);
 					$("#pay_status").val(result.payinfo.pay_status);
-					
-				
+				},
+				error:function() {
+
 				}
-
-				
-
-
-
 			});
+        }
+
+		// 주문상품 개별삭제 name='order_delete_pro'
+		$("div#order_info div#order_product_info").on("click", "button[name='order_delete_pro']", function() {
+			if(!confirm("삭제하시겠습니까?")) return;
+			
+			// order_num : 주문번호는 상세보기 클릭시 위에 전역변수로 선언.
+
+			let pro_num = $(this).data("pro_num");
+
+			$.ajax({
+				url: '/admin/order/order_individual_delete',
+				type: 'get',
+				data: {order_num : order_num, pro_num: pro_num},
+				dataType: 'text',
+				success: function(result) {
+					if(result == 'success') {
+					alert("주문상품이 삭제되었습니다.");
+					order_detail_info();
+				}
+			},
+			error:function() {
+
+			}
+			
+		});
+		
+	});
+
+	// 기본 주문(수령)정보 수정하기 btn_base_modify
+	$("button#btn_base_modify").on("click", function() {
+
+		// order_num: 전역변수
+		// user_id : 세션에서 참조하면 안됨. 히든으로 수령인 밑에 숨김 
+
+			let order_base_data = {
+				order_num : order_num, order_name: $("#order_name").val(),user_id : $("#user_id").val() 
+				,order_zipcode : $("#sample2_postcode").val(), order_addr: $("#sample2_address").val(), order_deaddr: $("#sample2_detailAddress").val(),
+				order_pho: $("#order_pho").val(), order_req: $("#order_req").val(), order_admin_memo:$("#order_admin_memo").val()}
+
+
+			$.ajax({
+				url: '/admin/order/order_base_modify',
+				type: 'post',
+				data: order_base_data,
+				dataType: 'text',
+				success: function(result) {
+					if(result == 'success') {
+					alert("기본정보가 수정되었습니다.");
+					order_detail_info();
+				}
+			},
+			error:function() {
+
+			}
+		
+		});
+
+	});
         
-        });
         
         //Handleber 작업합수
 		let print_order_product_info = function(order_product_data, target, template) {

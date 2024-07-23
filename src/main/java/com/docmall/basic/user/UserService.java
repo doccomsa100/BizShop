@@ -59,6 +59,21 @@ public class UserService {
 			userMapper.changePw(user_id, new_user_pwd);
 		}
 	
+	// 어느 api로 로그인한지 확인
+	public String existsUserInfo(String sns_email) {
+		return userMapper.existsUserInfo(sns_email);
+	}
+		
+	// sns user 중복체크
+	public String sns_user_check(String sns_email) {
+		return userMapper.sns_user_check(sns_email);
+	}
+		
+	// 입력값 삽입
+	public void sns_user_insert(SNSUserDto dto) {
+		userMapper.sns_user_insert(dto);
+	}
+		
 	
 	
 	// 임시비밀번호 발급

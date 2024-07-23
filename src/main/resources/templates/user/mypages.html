@@ -209,7 +209,13 @@
 	     
 	     // 수정버튼 클릭
 	     $("#btnModify").on("click", function() {
-	         $("#ModifyForm").submit();
+	         if(msg == "kakao_login") {
+				alert("SNS로그인상태이므로 회원수정이 불가능합니다.");
+				return;
+	         }
+	    	 
+	    	 
+	    	 $("#ModifyForm").submit();
 	         
 	     });
 	

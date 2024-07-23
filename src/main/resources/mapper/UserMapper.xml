@@ -106,7 +106,40 @@ WHERE
 
 </update>
 
-
+<select id="existsUserInfo" resultType="String">
+	
+		SELECT 
+			sns_login_type
+		FROM
+			user_tbl
+		WHERE
+			user_email = #{sns_email}
+	
+	
+	</select>
+	
+	<!-- SNS 카카오, 네이버 사용자 중복체크 -->
+	<select id="sns_user_check" parameterType="String" resultType="String">
+	
+		SELECT
+			email
+		FROM
+			sns_user_tbl
+		WHERE
+			email = #{sns_email}
+	
+	</select>
+	
+	<insert id="sns_user_insert" parameterType="com.docmall.basic.user.SNSUserDto">
+	
+		INSERT INTO
+			sns_user_tbl(id, name, email, sns_type)
+		VALUES
+			(#{id}, #{name}, #{email}, #{sns_type})
+			
+	</insert>
+	
+	
 
 
 </mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.basic.qnaboard.QnaBoardMapper">
+
+	<select id="qnalist" parameterType="map"  resultType="QnaBoardVO">
+	
+		SELECT 
+			qna_idx, pro_num ,user_id,qna_title ,question, answer, anscheck, pro_up_folder, pro_img, question_date, answer_date
+		FROM (																		<!-- 인라인뷰 -->
+		    	SELECT /*+ INDEX_DESC(qnaboard_tbl PK_QNA_IDX)  */ 
+		        	ROWNUM AS RN, qna_idx, pro_num ,user_id,qna_title ,question, answer, anscheck, pro_up_folder, pro_img, question_date, answer_date
+		    	FROM
+		        	qnaboard_tbl
+		    	WHERE
+		    		pro_num = #{pro_num}
+		    	AND
+  				 
+		 <![CDATA[  		
+		   		ROWNUM <= (#{cri.pageNum} * #{cri.amount})   -- 페이지번호 * 페이지별 출력건수
+		 ]]>  		
+		)
+		WHERE 
+			RN > (#{cri.pageNum} - 1 ) * #{cri.amount}
+	
+	</select>
+
+	<select id="getCountQnaBypro_num" parameterType="Integer" resultType="int">
+	
+		SELECT
+			COUNT(*)
+		FROM
+			qnaboard_tbl
+		
+		WHERE
+			pro_num = #{pro_num}
+	
+	</select>
+
+</mapper>
