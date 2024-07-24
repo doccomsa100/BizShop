@@ -17,12 +17,17 @@ public class QnaBoardService {
 	private final QnaBoardMapper qnaBoardMapper;
 	
 	// QnA리스트
-	public List<QnaBoardVO> qnalist(Integer pro_num,Criteria cri) {
+	public List<QnaBoardVO> qnalist(int pro_num,Criteria cri) {
 		return qnaBoardMapper.qnalist(pro_num, cri);
 		}
 
 	// QnA리스트 총개수
-	public int getCountQnaBypro_num(Integer pro_num) {
+	public int getCountQnaBypro_num(int pro_num) {
 		return qnaBoardMapper.getCountQnaBypro_num(pro_num);
+	}
+	
+	// QnA저장
+	public void qna_save(UserQnaVO vo) {
+		qnaBoardMapper.qna_save(vo);
 	}
 }

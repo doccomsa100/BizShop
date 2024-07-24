@@ -30,6 +30,8 @@ public class ReviewVO {
 	private Integer rev_code;
 	private String 	user_id;
 	private int     pro_num;
+	private String  pro_img;
+	private String  pro_up_folder;
 	private String  rev_content;
 	private String  rev_title;
 	private int     rev_rate;

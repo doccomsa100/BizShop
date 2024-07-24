@@ -1,19 +1,28 @@
 package com.docmall.basic.user;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.docmall.basic.common.dto.Criteria;
+import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.kakaoLogin.KakaoUserInfo;
 import com.docmall.basic.mail.EmailDTO;
 import com.docmall.basic.mail.EmailService;
-
+import com.docmall.basic.qnaboard.QnaBoardService;
+import com.docmall.basic.qnaboard.QnaBoardVO;
+import com.docmall.basic.qnaboard.UserQnaVO;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +39,8 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 	
 	private final EmailService emailService;
+	
+	private final QnaBoardService qnaBoardService;
 	
 	@GetMapping("join")
 	public void joinForm() {
@@ -360,7 +371,17 @@ public class UserController {
 		return "redirect:/user/changepw";
 	}
 	
-	
+	// 내 Qna보기
+	@GetMapping("/myqna")
+	public void myqna(UserQnaVO vo,Criteria cri,Model model,HttpSession session) throws Exception {
+		
+		cri.setAmount(3);
+		String user_id = ((UserVo) session.getAttribute("login_status")).getUser_id();
+		vo.setUser_id(user_id);
+		
+		
+		
+	}
 	
 
 }
