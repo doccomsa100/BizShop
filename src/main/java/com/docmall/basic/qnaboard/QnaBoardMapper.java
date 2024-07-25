@@ -16,5 +16,7 @@ public interface QnaBoardMapper {
 	
 	// QnA저장
 	void qna_save(UserQnaVO vo);
+	
+
 
 }

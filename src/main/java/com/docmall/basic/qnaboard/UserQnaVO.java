@@ -12,7 +12,7 @@ import lombok.ToString;
 public class UserQnaVO {
 
 	
-	// qna_idx, pro_num, user_id,que_title ,Que_Content pro_up_folder, pro_img, question_date
+	// qna_idx, pro_num, user_id,que_title ,Que_Content,pro_up_folder, pro_img, question_date
 
 	private Long qna_idx;
 	private int pro_num;

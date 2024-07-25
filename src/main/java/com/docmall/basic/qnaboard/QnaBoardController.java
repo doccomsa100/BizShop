@@ -55,8 +55,8 @@ public class QnaBoardController {
 		});
 		
 		// 페이징정보
-		int Qnacount = qnaBoardService.getCountQnaBypro_num(pro_num);
-		PageDTO pageDTO = new PageDTO(cri, Qnacount);
+		int qnacount = qnaBoardService.getCountQnaBypro_num(pro_num);
+		PageDTO pageDTO = new PageDTO(cri, qnacount);
 		
 		map.put("qnalist", qnalist);
 		map.put("pageqna", pageDTO);

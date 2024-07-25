@@ -139,7 +139,39 @@ WHERE
 			
 	</insert>
 	
+	<select id="userqnalist" parameterType="map"  resultType="QnaBoardVO">
 	
+		SELECT 
+			qna_idx, pro_num, user_id, que_title, que_content, ans_title, ans_content, anscheck, pro_up_folder, pro_img, question_date, answer_date
+		FROM (																		<!-- 인라인뷰 -->
+		    	SELECT /*+ INDEX_DESC(qnaboard_tbl PK_QNA_IDX)  */ 
+		        	ROWNUM AS RN, qna_idx, pro_num, user_id, que_title, que_content, ans_title, ans_content, anscheck, pro_up_folder, pro_img, question_date, answer_date
+		    	FROM
+		        	qnaboard_tbl
+		    	WHERE
+		    		user_id = #{user_id}
+		    	AND
+  		
+		 <![CDATA[  		
+		   		ROWNUM <= (#{cri.pageNum} * #{cri.amount})   -- 페이지번호 * 페이지별 출력건수
+		 ]]>  		
+		)
+		WHERE 
+			RN > (#{cri.pageNum} - 1 ) * #{cri.amount}
+	
+	</select>
+	
+	<select id="getCountQnaByUserId" parameterType="String" resultType="int">
+	
+		SELECT 
+			COUNT(*)
+		FROM
+			qnaboard_tbl
+		WHERE
+			user_id = #{user_id}
+	
+	
+	</select>
 
 
 </mapper>

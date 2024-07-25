@@ -25,6 +25,14 @@
 		p#star_rev_rate a.rev_rate.on {
 			color: red;
 		}
+		
+		.table tr.title-cell {
+        max-width: 200px; /* 제목 셀의 최대 너비 */
+        overflow: hidden; /* 넘치는 내용 숨기기 */
+        text-overflow: ellipsis; /* 넘치는 내용 생략 부호(...) 표시 */
+        white-space: nowrap; /* 줄 바꿈 방지 */
+    	}
+		
 	  </style>
 	<!-- 각 페이지의 css -->
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
@@ -63,7 +71,7 @@
 	<script id="qna-template" type="text/x-handlebars-template">
 		<table id="" class="table">
 			<thead class="thead-dark">
-			  <tr>
+			  <tr class="title-cell">
 				<th scope="col">글번호</th>
 				<th scope="col">상품번호</th>
 				<th scope="col">상품이미지</th>
@@ -72,6 +80,7 @@
 				<th scope="col">질문</th>
 				<th scope="col">답변여부</th>
 				<th scope="col">질문날짜</th>
+				<th scope="col">답변날짜</th>
 			  </tr>
 			</thead>
 			<tbody>
@@ -84,9 +93,18 @@
                 </td>
 				<td>{{user_id}}</td>
 				<td>{{que_title}}</td>
-				<td>{{que_content}}</td>
-				<td>{{#if (eq anscheck "Y")}}답변 완료{{else}}답변 대기{{/if}}</td>
-				<td>{{convertDate question_date}}</td>
+				<td>
+                    {{que_content}}
+                </td>
+				<td>{{#if (eq anscheck "Y")}}답변<br>완료{{else}}답변<br>대기{{/if}}</td>
+				<td>{{conqnatDate question_date}}</td>
+				<td>
+					{{#if answer_date}}
+                    	{{conqnatDate answer_date}}
+                	{{else}}
+                    	답변<br>대기
+                	{{/if}}
+				</td>
 			  </tr>
 			  {{/each}}
 			</tbody>
@@ -776,11 +794,21 @@ $("#uploadFile").on("change", function(e) {
 
 		});
 	});
-
+	
+	
 	Handlebars.registerHelper('eq', function(a, b) {
 		return a === b;
 	});
 
+	// Handlebars함수: 날짜포맷
+	Handlebars.registerHelper("conqnatDate", function(rev_date) {
+		const d = new Date(rev_date);
+		let year = d.getFullYear();
+		let month = d.getMonth();
+		let date = d.getDate();
+
+		return `${year}/${month}/${date}`;
+	});
 
 
 

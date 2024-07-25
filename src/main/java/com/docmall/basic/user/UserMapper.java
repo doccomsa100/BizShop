@@ -1,6 +1,12 @@
 package com.docmall.basic.user;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
+
+import com.docmall.basic.common.dto.Criteria;
+import com.docmall.basic.qnaboard.QnaBoardVO;
+import com.docmall.basic.qnaboard.UserQnaVO;
 
 public interface UserMapper {
 
@@ -39,6 +45,11 @@ public interface UserMapper {
 	
 	// 입력값 삽입
 	void sns_user_insert(SNSUserDto dto);
+	
+	// 사용자 QnA리스트
+	List<QnaBoardVO> userqnalist(@Param("user_id") String user_id, @Param("cri") Criteria cri);
 
-
+	// 사용자 ID로 QnA 개수를 가져오는 쿼리
+    int getCountQnaByUserId(String user_id);
+	
 }

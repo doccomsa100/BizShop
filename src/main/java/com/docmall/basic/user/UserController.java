@@ -1,28 +1,25 @@
 package com.docmall.basic.user;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
+import com.docmall.basic.common.util.FileManagerUtils;
 import com.docmall.basic.kakaoLogin.KakaoUserInfo;
 import com.docmall.basic.mail.EmailDTO;
 import com.docmall.basic.mail.EmailService;
-import com.docmall.basic.qnaboard.QnaBoardService;
 import com.docmall.basic.qnaboard.QnaBoardVO;
-import com.docmall.basic.qnaboard.UserQnaVO;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +37,10 @@ public class UserController {
 	
 	private final EmailService emailService;
 	
-	private final QnaBoardService qnaBoardService;
+	//상품이미지 업로드 경로
+	@Value("${file.product.image.user}")
+	private String uploadPath;
+	
 	
 	@GetMapping("join")
 	public void joinForm() {
@@ -373,15 +373,35 @@ public class UserController {
 	
 	// 내 Qna보기
 	@GetMapping("/myqna")
-	public void myqna(UserQnaVO vo,Criteria cri,Model model,HttpSession session) throws Exception {
+	public void myqna(HttpSession session,Criteria cri, Model model) throws Exception {
 		
-		cri.setAmount(3);
-		String user_id = ((UserVo) session.getAttribute("login_status")).getUser_id();
-		vo.setUser_id(user_id);
+		// 세션에서 사용자 아이디를 가지고옴
+		String user_id = ((UserVo)session.getAttribute("login_status")).getUser_id();
 		
+		// 사용자아이디로 QnA리스트와 총개수를 가지고옴
+		List<QnaBoardVO> userqnalist = userService.userqnalist(user_id, cri);
+		userqnalist.forEach(vo -> {
+			vo.setPro_up_folder(vo.getPro_up_folder().replace("\\", "/"));
+		});
+		
+		int userqnacount = userService.getCountQnaByUserId(user_id);
+		PageDTO pageDTO = new PageDTO(cri, userqnacount);
+		
+		model.addAttribute("userqnalist", userqnalist);
+		model.addAttribute("pageMaker", pageDTO);
 		
 		
 	}
+	// Qna리스트에서 사용할 이미지보여주기
+	@GetMapping("/image_display")
+	public ResponseEntity<byte[]> image_display(String dateFolderName, String fileName) throws Exception {
+		
+		// 로그 출력
+	    log.info("File Path: " + fileName);
+		
+		return FileManagerUtils.getFile(uploadPath + dateFolderName, fileName);
+	}
+		
 	
 
 }

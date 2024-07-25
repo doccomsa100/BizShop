@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout/adminlayout}">
+  <head>
+    
+    
+  </head>
+  <!--
+  BODY TAG OPTIONS:
+  =================
+  Apply one or more of the following classes to get the
+  desired effect
+  |---------------------------------------------------------|
+  | SKINS         | skin-blue                               |
+  |               | skin-black                              |
+  |               | skin-purple                             |
+  |               | skin-yellow                             |
+  |               | skin-red                                |
+  |               | skin-green                              |
+  |---------------------------------------------------------|
+  |LAYOUT OPTIONS | fixed                                   |
+  |               | layout-boxed                            |
+  |               | layout-top-nav                          |
+  |               | sidebar-collapse                        |
+  |               | sidebar-mini                            |
+  |---------------------------------------------------------|
+  -->
+  <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+
+      <!-- Main Header -->
+      
+      <!-- Left side column. contains the logo and sidebar -->
+      
+	<th:block layout:fragment="content">
+      <script src="/plugins/ckeditor/ckeditor.js"></script>
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            QnA리스트
+            <small>QnA리스트 메뉴입니다.</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="/admin/admin_meun"><i class="fa fa-dashboard"></i>메인페이지</a></li>
+            <li class="active">상품문의</li>
+            <li class="active">QnA리스트</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+          <!-- Your Page Content Here -->
+          <div class="row">
+          	<div class="col">
+          		<div class="box box-info">
+                <!-- list start -->
+                <div class="row">
+    		<div class="col-md-12">
+    			<div class="box">
+					<div class="box-header with-border">
+					<h3 class="box-title"><b>QnA List</b></h3>
+					</div>
+
+					<div class="box-body">
+						<div>
+							<form action="/admin/members/member_list" method="get" >
+									<select name="type">
+										<option selected>검색종류선택</option>
+										<option value="T">제목</option>
+										<option value="I">아이디</option>
+										<option value="P">상품번호</option>
+										<option value="TP">제목 or 상품번호</option>
+									</select>
+									<input type="text" name="keyword" th:value="${pageMaker.cri.keyword}" />
+									<input type="hidden" name="pageNum" th:value="${pageMaker.cri.pageNum}" />
+									<input type="hidden" name="amount" th:value="${pageMaker.cri.amount}" />
+									<button type="submit" class="btn btn-primary">검색</button>
+							</form>
+						</div>
+						<table class="table table-bordered">
+						 <tbody>
+						 	
+							<tr>
+								<th style="width: 8%">글번호</th>
+								<th style="width: 10%">상품번호</th>
+								<th style="width: 25%">상품이미지</th>
+								<th style="width: 10%">아이디</th>
+								<th style="width: 10%">질문제목</th>
+								<th style="width: 15%">질문내용</th>
+								<th style="width: 15%">질문날짜</th>
+								<th style="width: 15%">답변날짜</th>
+								<th style="width: 10%">답변유무</th>
+							</tr>
+							
+							<tr th:each="adminqna : ${adminqna_list}">
+								<td>[[${adminqna.qna_idx}]]</td>
+								<td>[[${adminqna.pro_num}]]</td>
+								<td>
+									<img th:src="@{/admin/qnaboard/image_display(dateFolderName=${adminqna.pro_up_folder}, fileName=${adminqna.pro_img})}" alt="QnA Image" style="width: 80px;height: 80px;"/>
+								</td>
+								<td>[[${adminqna.user_id}]]</td>
+								<td>[[${adminqna.que_title}]]</td>
+								<td>[[${adminqna.que_content}]]</td>
+								<td th:text="${#dates.format(adminqna.question_date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td>
+									<span th:text="${adminqna.answer_date != null ? #dates.format(adminqna.answer_date, 'yyyy-MM-dd HH:mm:ss') : '대기'}"></span>
+								</td>
+								<td>
+									<select class="form-select" name="qnaanswer" th:data-reply_status="${adminqna.anscheck}">
+										<option value="N" th:selected="${adminqna.anscheck == 'N'}">답변대기</option>
+										<option value="Y" th:selected="${adminqna.anscheck == 'Y'}">답변완료</option>
+									</select>
+								</td>
+								<td><button type="button" class="btn btn-danger" name="btn_qna_model" th:data-qnaData="${adminqna.pro_num}"><b>답변하기</b></button></td>
+							</tr>
+							
+							</tbody>
+						</table>
+					</div>
+					<div class="box-footer clearfix">
+						<div class="row">
+							<div class="col-md-4">
+							<!--1)페이지번호 클릭할 때 사용  [이전]  1	2	3	4	5 [다음]  -->
+							<!--2)목록에서 상품이미지 또는 상품명 클릭할 때 사용   -->
+							  <form id="actionForm" action="" method="get">
+								<input type="hidden" name="pageNum" id="pageNum" th:value="${pageMaker.cri.pageNum}" />
+								<input type="hidden" name="amount"  id="amount" th:value="${pageMaker.cri.amount}" />
+								<input type="hidden" name="type" id="type" th:value="${pageMaker.cri.type}" />
+								<input type="hidden" name="keyword" id="keyword" th:value="${pageMaker.cri.keyword}" />
+								
+							  </form>
+							</div>
+							<div class="col-md-6 text-center">
+								<nav aria-label="...">
+								<ul class="pagination">
+									<!-- 이전 표시여부 -->
+									
+									<th:block th:if="${pageMaker.prev }">
+										<li class="page-item">
+											<a th:href="${pageMaker.startPage - 1 }" class="page-link movepage">이전</a>
+										</li>
+									</th:block>
+									
+									<!-- https://jbground.tistory.com/40 페이지번호 출력 -->
+									<!-- 1	2	3	4	5 6	7	8	9	10  [다음] -->
+									<!-- [이전] 11	12	13	14	15 16	17	18	19	20   -->
+
+									<th:block th:with="pageMaker = ${pageMaker}">
+										<th:block th:each="num : *{#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}">
+										<li class='page-item' th:classappend="${pageMaker.cri.pageNum ==  num ? 'active': '' }" aria-current="page">
+											<a class="page-link movepage" th:href="${num }" th:text="${num }"></a>
+										</li>
+										</th:block>
+									</th:block>
+
+									<!--  다음 표시여부 -->
+									<th:block th:if="${pageMaker.next }">
+									  <li class="page-item">
+										<a th:href="${pageMaker.endPage + 1 }" class="page-link movepage">다음</a>
+									  </li>
+									</th:block>
+									
+								</ul>
+								</nav>
+							</div>
+							<div class="col-md-2 text-right"><a th:href="@{/admin/members/member_insert}" class="btn btn-primary" id="btn_pro_insert">회원등록</a></div>
+						</div>
+						
+					</div>
+			   </div>
+    		</div>
+    	</div>
+              </div>
+          	</div>
+          </div>
+          
+
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+	  
+	  <!-- Modal HTML 수정 -->
+<div class="modal fade" id="adminqna_modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">답변하기</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="qna_form">
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">제목</label>
+                        <input type="text" class="form-control" id="que_title" readonly>
+                        <input type="hidden" class="form-control" id="qna_idx">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">질문내용</label>
+                        <textarea class="form-control" id="que_content" readonly></textarea>
+                    </div>
+                    <div class="form-group row">
+                        <label for="title" class="col-sm-1 col-form-label">상품이미지</label>
+                        <div class="col-sm-3">
+                            <img id="product_image" src="" alt="상품 이미지" style="width: 80px; height: 80px;">
+                        </div>
+                    </div>
+					<div class="form-group">
+                        <label for="message-text" class="col-form-label">답변제목</label>
+                        <textarea class="form-control" id="ans_title"></textarea>
+                    </div>
+					<div class="form-group">
+                        <label for="message-text" class="col-form-label">답변내용</label>
+                        <textarea class="form-control" id="answer_content"></textarea>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="qna_save" class="btn btn-primary">답변완료</button>
+            </div>
+        </div>
+    </div>
+</div>
+		
+
+
+    </th:block>
+
+      <!-- Main Footer -->
+      
+
+      <!-- Control Sidebar -->
+      
+    
+
+    <!-- REQUIRED JS SCRIPTS -->
+	<th:block layout:fragment="script">
+    <script>
+
+      $(document).ready(function() {
+        
+        let actionForm = $("#actionForm");
+        
+        $(".movepage").on("click", function(e) {
+			e.preventDefault();   // a태그의 href기능 제거
+			// 주소변경
+			actionForm.attr("action", "/admin/qnaboard/qnalist"); // <form id="actionForm" action="" method="get"> action주소를 변경
+        	// 클릭한 페이지번호 작업
+        	// pageNum이라는 이름의 숨겨진 입력 필드를 찾아서, 클릭된 페이지 번호 링크의 href 속성 값을 해당 입력 필드에 설정
+        	actionForm.find("input[name='pageNum']").val($(this).attr("href")); // $(this): 현재클릭한 태그를 가르킴
+        	
+        	// 전송
+			actionForm.submit();
+        
+        });
+        
+     // 답변하기 클릭시 name=btn_pro_delete
+        $("button[name='btn_qna_model']").on("click", function() {
+        	let qnaData = $(this).data("qnaData");
+        				
+			console.log("상품코드 " + qnaData);
+			return;
+        
+			
+			
+        });
+     
+		
+     
+     
+        
+      }); // ready event end
+
+    </script>
+    </th:block>
+  </body>
+</html>

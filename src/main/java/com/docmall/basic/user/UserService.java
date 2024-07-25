@@ -1,9 +1,13 @@
 package com.docmall.basic.user;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+
+import com.docmall.basic.common.dto.Criteria;
+import com.docmall.basic.qnaboard.QnaBoardVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,11 +18,12 @@ public class UserService {
 	
 	private final UserMapper userMapper;
 
+	// 회원가입
 	public void join(UserVo vo) {
 		userMapper.join(vo);
 		
 	}
-
+	// 아이디 중복체크
 	public String idCheck(String user_id) {
 		// TODO Auto-generated method stub
 		return userMapper.idCheck(user_id);
@@ -73,8 +78,16 @@ public class UserService {
 	public void sns_user_insert(SNSUserDto dto) {
 		userMapper.sns_user_insert(dto);
 	}
-		
 	
+	// 사용자 QnA리스트
+	public List<QnaBoardVO> userqnalist(@Param("user_id") String user_id, @Param("cri") Criteria cri) {
+		return userMapper.userqnalist(user_id, cri);
+	}
+
+	// 사용자 ID로 QnA 개수를 가져오는 쿼리
+    public int getCountQnaByUserId(String user_id) {
+    	return userMapper.getCountQnaByUserId(user_id);
+    }
 	
 	// 임시비밀번호 발급
 	// 임시 비밀번호 생성(UUID 이용)
