@@ -12,4 +12,7 @@ public interface AdminQnaMapper {
 	
 	// 총데이터 개수
 	int getAdminQnaCount(Criteria cri);
+	
+	// qna후기 폼
+	QnaBoardVO qna_modify(Long qna_idx);
 }

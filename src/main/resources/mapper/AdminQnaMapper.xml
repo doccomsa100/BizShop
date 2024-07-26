@@ -59,6 +59,17 @@
 			pro_num > 0
 	
 	</select>
+	
+	<select id="qna_modify" parameterType="Long" resultType="QnaBoardVO">
+		
+		SELECT
+			qna_idx, pro_num, user_id, que_title, que_content, ans_title, ans_content, anscheck, pro_up_folder, pro_img, question_date, answer_date
+		FROM
+			qnaboard_tbl
+		WHERE
+			qna_idx = #{qna_idx}
+	
+	</select>
 
 
 </mapper>

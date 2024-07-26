@@ -27,5 +27,8 @@ public class AdminQnaService {
 		return adminQnaMapper.getAdminQnaCount(cri);
 	}
 	
-	
+	// qna후기 폼
+	public QnaBoardVO qna_modify(Long qna_idx) {
+		return adminQnaMapper.qna_modify(qna_idx);	
+		}
 }

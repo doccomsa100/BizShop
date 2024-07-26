@@ -3,17 +3,25 @@ package com.docmall.basic.admin.qnaboard;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.common.util.FileManagerUtils;
 import com.docmall.basic.qnaboard.QnaBoardVO;
+import com.docmall.basic.review.ReviewVO;
+import com.docmall.basic.user.UserVo;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,8 +65,25 @@ public class AdminQnaController {
 		return FileManagerUtils.getFile(uploadPath + dateFolderName, fileName);
 	}
 	
-	// 답변하기
+	// 답변하기 폼작업
+	@GetMapping("/qna_modify/{qna_idx}")
+	public ResponseEntity<QnaBoardVO> qna_modify(@PathVariable("qna_idx") Long qna_idx) throws Exception {
+		ResponseEntity<QnaBoardVO> entity = null;
+		
+		QnaBoardVO qnaBoard = adminQnaService.qna_modify(qna_idx);
+		
+		// 파일 경로에 있는 역슬래시(\)를 슬래시(/)로 변경
+		if(qnaBoard.getPro_up_folder() != null) {
+			qnaBoard.setPro_up_folder(qnaBoard.getPro_up_folder().replace("\\", "/"));
+		}
 	
+		 // 이미지 파일 이름에 대한 경로도 변경
+		if(qnaBoard.getPro_img() != null) {
+			qnaBoard.setPro_img(qnaBoard.getPro_img().replace("\\", "/"));
+		}
+		
+		return new ResponseEntity<>(qnaBoard, HttpStatus.OK);
+	}
 	
 	
 }

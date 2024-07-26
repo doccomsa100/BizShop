@@ -69,7 +69,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 					<div class="box-body">
 						<div>
-							<form action="/admin/members/member_list" method="get" >
+							<form action="/admin/qnaboard/qnalist" method="get" >
 									<select name="type">
 										<option selected>검색종류선택</option>
 										<option value="T">제목</option>
@@ -96,6 +96,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 								<th style="width: 15%">질문날짜</th>
 								<th style="width: 15%">답변날짜</th>
 								<th style="width: 10%">답변유무</th>
+								<th style="width: 10%">관리</th>
 							</tr>
 							
 							<tr th:each="adminqna : ${adminqna_list}">
@@ -117,7 +118,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 										<option value="Y" th:selected="${adminqna.anscheck == 'Y'}">답변완료</option>
 									</select>
 								</td>
-								<td><button type="button" class="btn btn-danger" name="btn_qna_model" th:data-qnaData="${adminqna.pro_num}"><b>답변하기</b></button></td>
+								<td><button type="button" class="btn btn-danger" name="btn_qna_answer" th:data-qna_data="${adminqna.qna_idx}"><b>답변하기</b></button></td>
 							</tr>
 							
 							</tbody>
@@ -169,7 +170,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 								</ul>
 								</nav>
 							</div>
-							<div class="col-md-2 text-right"><a th:href="@{/admin/members/member_insert}" class="btn btn-primary" id="btn_pro_insert">회원등록</a></div>
 						</div>
 						
 					</div>
@@ -186,7 +186,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	  
 	  <!-- Modal HTML 수정 -->
 <div class="modal fade" id="adminqna_modal" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">답변하기</h5>
@@ -196,6 +196,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div>
             <div class="modal-body">
                 <form id="qna_form">
+					<div class="form-group row">
+                        <label for="title" class="col-sm-1 col-form-label">상품이미지</label>
+                        <div class="col-sm-3">
+                            <img id="product_image" src="" alt="상품 이미지" style="width: 400px; height: 350px;">
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">제목</label>
                         <input type="text" class="form-control" id="que_title" readonly>
@@ -205,15 +211,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <label for="message-text" class="col-form-label">질문내용</label>
                         <textarea class="form-control" id="que_content" readonly></textarea>
                     </div>
-                    <div class="form-group row">
-                        <label for="title" class="col-sm-1 col-form-label">상품이미지</label>
-                        <div class="col-sm-3">
-                            <img id="product_image" src="" alt="상품 이미지" style="width: 80px; height: 80px;">
-                        </div>
-                    </div>
 					<div class="form-group">
                         <label for="message-text" class="col-form-label">답변제목</label>
-                        <textarea class="form-control" id="ans_title"></textarea>
+                        <input type="text" class="form-control" id="ans_title">
                     </div>
 					<div class="form-group">
                         <label for="message-text" class="col-form-label">답변내용</label>
@@ -262,15 +262,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
         
      // 답변하기 클릭시 name=btn_pro_delete
-        $("button[name='btn_qna_model']").on("click", function() {
-        	let qnaData = $(this).data("qnaData");
-        				
-			console.log("상품코드 " + qnaData);
-			return;
-        
+       // 상품후기 수정폼(수정하는 작업을 보여주기위해)
+		$("button[name='btn_qna_answer']").on("click",function() {
+			let qna_data = $(this).data("qna_data");
 			
-			
-        });
+
+
+			$.ajax({
+				url: '/admin/qnaboard/qna_modify/' + qna_data,  // REST API
+				headers: {
+					"Content-Type" : "application/json", "x-HTTP-Method-Override" : "GET"
+				},
+				type: 'get',
+				dataType: 'json', // 스프링에서 넘어오는 데이터가 무슨타입인지 확인
+				success: function(result) { // result: 스프링에서 넘어오는 값 (상품후기 내용이 들어옴)
+					console.log(result);
+
+					// model 내용에 상품후기 출력작업
+					$("#qna_idx").val(result.qna_idx);
+					$("#que_title").val(result.que_title);
+					$("#que_content").val(result.que_content);
+					let imageUrl = `/admin/qnaboard/image_display?dateFolderName=${result.pro_up_folder}&fileName=${result.pro_img}`;
+					$("#product_image").attr("src", imageUrl);
+					
+					
+					// modal 보여주기
+					$("#adminqna_modal").modal('show');
+					
+				}
+			});
+		});
      
 		
      
