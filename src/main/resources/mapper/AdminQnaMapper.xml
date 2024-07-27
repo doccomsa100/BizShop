@@ -70,6 +70,17 @@
 			qna_idx = #{qna_idx}
 	
 	</select>
+	
+	<update id="update_qna" parameterType="QnaBoardVO">
+	
+		UPDATE
+			qnaboard_tbl
+		SET
+			ans_title = #{ans_title},ans_content = #{ans_content}, anscheck = #{anscheck},answer_date = sysdate
+		WHERE
+			qna_idx = #{qna_idx}
+	
+	</update>
 
 
 </mapper>

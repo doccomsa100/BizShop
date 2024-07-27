@@ -31,4 +31,9 @@ public class AdminQnaService {
 	public QnaBoardVO qna_modify(Long qna_idx) {
 		return adminQnaMapper.qna_modify(qna_idx);	
 		}
+	
+	// 답변저장
+	public void update_qna(QnaBoardVO vo) {
+		adminQnaMapper.update_qna(vo);
+	}
 }

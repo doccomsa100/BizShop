@@ -8,9 +8,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -37,6 +39,7 @@ public class AdminQnaController {
 	@Value("${file.product.image.user}")
 	private String uploadPath;
 	
+	// qna리스트
 	@GetMapping("/qnalist")
 	public void qnalist(Criteria cri, Model model) {
 	
@@ -82,8 +85,25 @@ public class AdminQnaController {
 			qnaBoard.setPro_img(qnaBoard.getPro_img().replace("\\", "/"));
 		}
 		
-		return new ResponseEntity<>(qnaBoard, HttpStatus.OK);
+		entity = new ResponseEntity<QnaBoardVO>(qnaBoard, HttpStatus.OK);
+		
+		return entity;
 	}
+	
+	// 답변하기저장
+	@PutMapping("/qna_save")
+	public ResponseEntity<String> qna_save(@RequestBody QnaBoardVO vo) throws Exception {
+		ResponseEntity<String> entity = null;
+		
+		adminQnaService.update_qna(vo);
+		
+		entity = new ResponseEntity<String>("success", HttpStatus.OK);
+		
+		return entity;
+	}
+	
+	// QnA삭제 
+//	@DeleteMapping("/qna_delete/")
 	
 	
 }

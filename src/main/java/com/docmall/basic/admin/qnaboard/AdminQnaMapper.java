@@ -15,4 +15,7 @@ public interface AdminQnaMapper {
 	
 	// qna후기 폼
 	QnaBoardVO qna_modify(Long qna_idx);
+	
+	// 답변저장
+	void update_qna(QnaBoardVO vo);
 }
