@@ -60,7 +60,7 @@
 	
 	</select>
 	
-	<insert id="qna_save" parameterType="UserQnaVO">
+	<insert id="qna_save" parameterType="QnaBoardVO">
 	
 		INSERT INTO
 			qnaboard_tbl(qna_idx, pro_num, user_id,que_title ,que_content, pro_up_folder, pro_img)

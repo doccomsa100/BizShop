@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -392,6 +394,42 @@ public class UserController {
 		
 		
 	}
+	
+	// 답변보기 폼
+	@GetMapping("/myqna_form/{qna_idx}")
+	public ResponseEntity<QnaBoardVO> qna_modify(@PathVariable("qna_idx") Long qna_idx) throws Exception {
+		ResponseEntity<QnaBoardVO> entity = null;
+		
+		QnaBoardVO qnaBoard = userService.myqna_form(qna_idx);
+		
+		// 파일 경로에 있는 역슬래시(\)를 슬래시(/)로 변경
+		if(qnaBoard.getPro_up_folder() != null) {
+			qnaBoard.setPro_up_folder(qnaBoard.getPro_up_folder().replace("\\", "/"));
+		}
+	
+		 // 이미지 파일 이름에 대한 경로도 변경
+		if(qnaBoard.getPro_img() != null) {
+			qnaBoard.setPro_img(qnaBoard.getPro_img().replace("\\", "/"));
+		}
+		
+		entity = new ResponseEntity<QnaBoardVO>(qnaBoard, HttpStatus.OK);
+		
+		return entity;
+	}
+	
+	// QnA삭제 
+	@DeleteMapping("/myqna_delete/{qna_idx}")
+	public ResponseEntity<String> myqna_delete(@PathVariable("qna_idx") Long qna_idx) {
+		ResponseEntity<String> entity = null;
+		
+		userService.myqna_delete(qna_idx);
+		
+		entity = new ResponseEntity<String>("sueccess",HttpStatus.OK);
+		
+		return entity;
+	}
+	
+	
 	// Qna리스트에서 사용할 이미지보여주기
 	@GetMapping("/image_display")
 	public ResponseEntity<byte[]> image_display(String dateFolderName, String fileName) throws Exception {
@@ -401,6 +439,8 @@ public class UserController {
 		
 		return FileManagerUtils.getFile(uploadPath + dateFolderName, fileName);
 	}
+	
+	
 		
 	
 

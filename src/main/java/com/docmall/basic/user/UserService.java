@@ -88,6 +88,17 @@ public class UserService {
     public int getCountQnaByUserId(String user_id) {
     	return userMapper.getCountQnaByUserId(user_id);
     }
+    
+    // 답변보기
+    public QnaBoardVO myqna_form(Long qna_idx) {
+    	return userMapper.myqna_form(qna_idx);
+    }
+    
+    // 내 qna지우기
+    public void myqna_delete(Long qna_idx) {
+    	userMapper.myqna_delete(qna_idx);
+    }
+    
 	
 	// 임시비밀번호 발급
 	// 임시 비밀번호 생성(UUID 이용)

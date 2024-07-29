@@ -15,7 +15,7 @@ public interface QnaBoardMapper {
 	int getCountQnaBypro_num(int pro_num);
 	
 	// QnA저장
-	void qna_save(UserQnaVO vo);
+	void qna_save(QnaBoardVO vo);
 	
 
 

@@ -2,6 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.docmall.basic.admin.membersinfo.MembersMapper">
 
+    <resultMap type="MembersVO" id="MembersMap">
+    	<id property="idx" column="mail_idx" />
+    	<result property="mtitle" column="mail_title" />
+    	<result property="mcontent" column="mail_content" />
+    	<result property="mgubun" column="mail_gubun" />
+    	<result property="mscount" column="mail_send_count" />
+    	<result property="date" column="reg_date" />
+    </resultMap>
+
+
+
 
 <!--  검색조건이 1)목록 2)총데이타 개수 공통사항 -->
 	<!-- 검색종류가 (상품명 또는 제조사 또는 내용) 선택.  "N"  "P"   "C" -->
@@ -66,10 +77,61 @@
 
 </delete>
 
+<insert id="mem_mail_save" parameterType="MembersVO">
+	
+	<selectKey keyProperty="idx" resultType="Integer" order="BEFORE">
+		
+		SELECT 
+			SEQ_MAILMNG_IDX.NEXTVAL
+		FROM
+			dual
+	</selectKey>
+
+	INSERT INTO
+		mailmng_tbl(mail_idx, mail_title, mail_content, mail_gubun)
+	VALUES
+		(#{idx}, #{mtitle}, #{mcontent}, #{mgubun})
+</insert>
+		
+	<select id="mem_mail_list" parameterType="Criteria"  resultMap="MembersMap">
+	
+		SELECT 
+			mail_idx, mail_title, mail_content, mail_gubun, mail_send_count, reg_date
+		FROM (																		<!-- 인라인뷰 -->
+		    	SELECT /*+ INDEX_DESC(mailmng_tbl PK_MAILMNG_IDX)  */ 
+		        	ROWNUM AS RN, mail_idx, mail_title, mail_content, mail_gubun, mail_send_count, reg_date
+		    	FROM
+		        	mailmng_tbl
+		    	WHERE
+		    		1 = 1
+		    	
+		 <include refid="search_title"></include>  
+  		
+		 <![CDATA[  		
+		   		AND ROWNUM <= (#{cri.pageNum} * #{cri.amount})   -- 페이지번호 * 페이지별 출력건수
+		 ]]>  		
+		)
+		WHERE 
+			RN > (#{cri.pageNum} - 1 ) * #{cri.amount}
+	
+	</select>
+
+	<select id="getMailListCount" parameterType="String" resultType="int">
+	
+		SELECT
+			COUNT(*)
+		FROM
+			mailmng_tbl
+		WHERE
+			1 = 1
+		
+		<include refid="search_title"></include>
+	</select>
 
 
-
-
+	<sql id="search_title">
+		<if test="mtitle != null and !mtitle.equals('')">AND mail_title like  '%' || #{mtitle} || '%'</if>
+	</sql>
 
 
 </mapper>

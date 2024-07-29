@@ -26,12 +26,21 @@
 			color: red;
 		}
 		
-		.table tr.title-cell {
-        max-width: 200px; /* 제목 셀의 최대 너비 */
-        overflow: hidden; /* 넘치는 내용 숨기기 */
-        text-overflow: ellipsis; /* 넘치는 내용 생략 부호(...) 표시 */
-        white-space: nowrap; /* 줄 바꿈 방지 */
-    	}
+		.table td,
+    .table th {
+        /* 테이블 셀에 기본 padding과 border 설정 */
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .table .title-cell,
+    .table .content-cell {
+        /* 제목과 내용 셀의 최대 너비와 넘치는 내용 처리 */
+        max-width: 200px; /* 원하는 최대 너비 */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 		
 	  </style>
 	<!-- 각 페이지의 css -->
@@ -92,8 +101,8 @@
                     <img src="/qnaboard/image_display?dateFolderName={{pro_up_folder}}&fileName={{pro_img}}" alt="상품 이미지" style="width: 80px;height: 80px;">
                 </td>
 				<td>{{user_id}}</td>
-				<td>{{que_title}}</td>
-				<td>
+				<td class="title-cell">{{que_title}}</td>
+				<td class="content-cell">
                     {{que_content}}
                 </td>
 				<td>{{#if (eq anscheck "Y")}}답변<br>완료{{else}}답변<br>대기{{/if}}</td>
@@ -163,7 +172,7 @@
 			<ul> 
 			  <li><a href="#pro_detali">상세정보</a></li>
 			  <li><a href="#pro_review">상품리뷰(0)</a></li>
-			  <li><a href="#pro_inquiry">상품문의(Q&A)</a></li>
+			  <li><a href="#pro_inquiry">상품문의(QnA)</a></li>
 			  <li><a href="#del_inquiry">배송문의</a></li>
 			</ul>
 			<div id="pro_detali">
@@ -247,7 +256,7 @@
 	<div class="modal-dialog modal-xl">
 	  <div class="modal-content">
 		<div class="modal-header">
-		  <h5 class="modal-title" id="staticBackdropLabel">Q%A(상품문의)</h5>
+		  <h5 class="modal-title" id="staticBackdropLabel">QnA(상품문의)</h5>
 		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			<span aria-hidden="true">&times;</span>
 		  </button>

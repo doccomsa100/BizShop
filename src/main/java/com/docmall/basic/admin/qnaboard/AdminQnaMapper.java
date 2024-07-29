@@ -18,4 +18,8 @@ public interface AdminQnaMapper {
 	
 	// 답변저장
 	void update_qna(QnaBoardVO vo);
+	
+	// QnA삭제
+	void qna_delete(Long qna_idx);
+	
 }

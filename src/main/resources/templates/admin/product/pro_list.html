@@ -103,7 +103,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 									<!-- /admin/product/imageDisplaydateFolderName=값1&?fileName=값2  -->
 									<a class="move" href="#">
 									<!-- /*/    /*/-->
-									<img th:src="${'/admin/product/image_display?dateFolderName=' + product.pro_up_folder + '&fileName=' + product.pro_img}">
+									<img th:src="${'/admin/product/image_display?dateFolderName=' + product.pro_up_folder + '&fileName=' + product.pro_img}" style="width: 80px;height: 80px;">
 									</a>
 								</td>
 								<td><a class="move pro_name" href="#" th:text="${product.pro_name}"></a></td>
@@ -199,29 +199,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script>
 
       $(document).ready(function() {
-        //1차카테고리 선택
-        $("#btn_firstCategory").on("change", function() {
-          
-          let cat_code = $("#btn_firstCategory").val();
-
-//          console.log("cat_code",cat_code);
-          // 2차카테고리 주소
-          let url = "/admin/category/secondcategory/" + cat_code;
-
-          $.getJSON(url, function(secondcategory_result) {
-            let btn_secondCategory = $("#btn_secondCategory"); // 2차카테고리 select태그를 참조
-            let optionStr = "";
-
-            for(let i=0; i<secondcategory_result.length; i++) {
-              optionStr += "<option value='" + secondcategory_result[i].cat_code + "'>" + secondcategory_result[i].cat_name + "</option>";
-            }
-
-            btn_secondCategory.find("option").remove();
-            btn_secondCategory.append("<option>2차카테고리 선택</option>");
-            btn_secondCategory.append(optionStr);
-          });
-
-        });
         
         let actionForm = $("#actionForm");
         

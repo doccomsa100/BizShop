@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
-@RequestMapping("/admin/qnaboard")
+@RequestMapping("/admin/qnaboard/*")
 @RequiredArgsConstructor
 public class AdminQnaController {
 	
@@ -103,7 +103,15 @@ public class AdminQnaController {
 	}
 	
 	// QnA삭제 
-//	@DeleteMapping("/qna_delete/")
-	
+	@DeleteMapping("/qna_delete/{qna_idx}")
+	public ResponseEntity<String> qna_delete(@PathVariable("qna_idx") Long qna_idx) {
+		ResponseEntity<String> entity = null;
+		
+		
+		adminQnaService.qna_delete(qna_idx);
+		entity = new ResponseEntity<String>("sueccess",HttpStatus.OK);
+		
+		return entity;
+	}
 	
 }

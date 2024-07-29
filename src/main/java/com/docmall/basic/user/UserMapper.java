@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.qnaboard.QnaBoardVO;
-import com.docmall.basic.qnaboard.UserQnaVO;
 
 public interface UserMapper {
 
@@ -51,5 +50,11 @@ public interface UserMapper {
 
 	// 사용자 ID로 QnA 개수를 가져오는 쿼리
     int getCountQnaByUserId(String user_id);
+    
+    // 답변보기
+    QnaBoardVO myqna_form(Long qna_idx);
+    
+    // 내 qna지우기
+    void myqna_delete(Long qna_idx);
 	
 }

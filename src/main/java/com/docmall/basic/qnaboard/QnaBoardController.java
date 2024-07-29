@@ -77,7 +77,7 @@ public class QnaBoardController {
 		
 		String user_id = ((UserVo) session.getAttribute("login_status")).getUser_id();
 		
-		UserQnaVO vo = new UserQnaVO();
+		QnaBoardVO vo = new QnaBoardVO();
 		vo.setPro_num(pro_num);
 	    vo.setQue_title(que_title);
 	    vo.setQue_content(que_content);

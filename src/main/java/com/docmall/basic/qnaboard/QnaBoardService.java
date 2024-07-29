@@ -27,7 +27,7 @@ public class QnaBoardService {
 	}
 	
 	// QnA저장
-	public void qna_save(UserQnaVO vo) {
+	public void qna_save(QnaBoardVO vo) {
 		qnaBoardMapper.qna_save(vo);
 	}
 }

@@ -81,6 +81,16 @@
 			qna_idx = #{qna_idx}
 	
 	</update>
+	
+	<delete id="qna_delete" parameterType="Long">
+			
+		DELETE FROM
+			qnaboard_tbl
+		WHERE
+			qna_idx = #{qna_idx}
+		
+	
+	</delete>
 
 
 </mapper>

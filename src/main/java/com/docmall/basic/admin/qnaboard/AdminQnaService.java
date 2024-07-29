@@ -36,4 +36,9 @@ public class AdminQnaService {
 	public void update_qna(QnaBoardVO vo) {
 		adminQnaMapper.update_qna(vo);
 	}
+	
+	// QnA삭제
+	public void qna_delete(Long qna_idx) {
+		adminQnaMapper.qna_delete(qna_idx);	
+		}
 }
