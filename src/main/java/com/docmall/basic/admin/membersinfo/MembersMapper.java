@@ -21,12 +21,30 @@ public interface MembersMapper {
 	// 메일정보 DB저장하기
 	void mem_mail_save(MembersVO vo);
 	
+	// 수신등록
+	void save_recipients(ReceiverVO r_vo);
+	
+	// 등록된수신자목록
+	List<ReceiverVO> getReceiverList(String email);
+	
 	// 메일발송리스트
 	List<MembersVO> mem_mail_list(@Param("cri") Criteria cri,@Param("mtitle") String mtitle);
 	
 	// 메일발송리스트 개수
-	int getMailListCount(String mtitle);
+	int getMailListCount(@Param("cri") Criteria cri,@Param("mtitle") String mtitle);
 	
+	// 회원테이블에서 전체회원 메일정보를 읽어오는 작업
+	String[] getALLMemberMail();
 	
+	// 메일발송 횟수증가
+	void mailSendCountUpdate(int idx);
 	
+	// 메일목록에서 메일발송
+	MembersVO getMailSendinfo(int idx);
+	
+	// 메일수정
+	void mailedit(MembersVO vo);
+	
+	// 메일삭제
+	void maildelete(int idx);
 }

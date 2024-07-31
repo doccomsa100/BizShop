@@ -43,11 +43,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <section class="content-header">
           <h1>
             메일리스트
-            <small>메일리스트 입니다.</small>
+            <small>작성한 메일들을 확인하는 곳입니다.</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="/admin/admin_meun"><i class="fa fa-dashboard"></i>메인페이지</a></li>
-            <li class="active">메일링관리</li>
+            <li class="active">메일관리</li>
             <li class="active">메일리스트</li>
           </ol>
         </section>
@@ -74,7 +74,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 									<div class="form-group row">
 										<label for="mtitle" class="col-sm-1 col-form-lobel">메일제목</label>
 										<div class="col-sm-11">
-											<input type="text" class="form-control" name="mtitle" id="mtitle" placeholder="메일링제목...">
+											<input type="text" class="form-control" name="mtitle" id="mtitle" placeholder="메일제목...">
 										</div>
 									</div>
 								</div>
@@ -88,25 +88,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
 							<tr>
 							    <th style="width: 2%"><input type="checkbox" id="checkAll"></th>
 								<th style="width: 8%">번호</th>
-								<th style="width: 10%">메일링제목</th>
-								<th style="width: 25%">발송횟수</th>
-								<th style="width: 10%">등록일</th>
-								<th style="width: 20%">관리</th>
+								<th style="width: 10%">메일제목</th>
+								<th style="width: 10%">발송횟수</th>
+								<th style="width: 8%">등록일</th>
+								<th style="width: 10%">수신자등록</th>
+								<th style="width: 10%">관리</th>
 								<th style="width: 15%">발송</th>
 							</tr>
 						</thead>	
-						<tbody>	
+						<tbody class="text-end">	
 							<tr th:each="mail : ${maillist}">
 								<td><input type="checkbox" name="check" th:value="${mail.idx}"></td>
 								<td>[[${mail.idx}]]</td>
 								<td>[[${mail.mtitle}]]</td>
-								<td th:text="${mscount}"></td>
+								<td><span th:text="${mail.mscount}"></span></td>
 								<td th:text="${#dates.format(mail.date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td>
+									<button type="button" class="btn btn-primary" name="mem_mail_insert" th:data-mail_idx="${mail.idx}">수신자등록하기</button>
+								</td>
 								<td>
 									<button type="button" class="btn btn-primary" name="btn_mail_edit" th:data-mail_idx="${mail.idx}">수정</button>
                 					<button type="button" class="btn btn-danger" name="btn_mail_del" th:data-mail_idx="${mail.idx}">삭제</button>
 								</td>
-								<td><button type="button" class="btn btn-danger" name="btn_mail_send" th:data-mail_idx="${mail.idx}">발송</button></td>
+								<td><button type="button" class="btn btn-Derk" name="btn_mail_send" th:data-mail_idx="${mail.idx}">메일발송</button></td>
 							</tr>
 						</tbody>
 					</table>
@@ -158,7 +162,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 								</ul>
 								</nav>
 							</div>
-							<div class="col-md-2 text-right"><a th:href="@{/admin/product/pro_insert}" class="btn btn-primary" id="btn_pro_insert">상품등록</a></div>
+							<div class="col-md-2 text-right">
+								<button type="button" class="btn btn-secondary" id="btn_mail_insert">메일등록</button>
+							</div>
 						</div>
 						
 					</div>
@@ -172,6 +178,34 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         </section><!-- /.content -->
       </div><!-- /.content-wrapper -->
+      <!-- Modal HTML 추가 -->
+	<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h3 class="modal-title" id="emailModalLabel"><b>수신자 등록</b></h3>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <form id="emailForm">
+	                    <div class="form-group">
+	                        <label for="emailList"><b>이메일 선택</b></label>
+	                        <select multiple class="form-control" id="emailList" size="10">
+	                            <!-- 이메일 목록은 JavaScript를 통해 동적으로 채워집니다 -->
+	                        </select>
+	                    </div>
+	                </form>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+	                <button type="button" class="btn btn-primary" id="saveEmails">저장</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+      
     </th:block>
 
       <!-- Main Footer -->
@@ -186,7 +220,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script>
 
       $(document).ready(function() {
-        
+		let savedEmails = [];
         let actionForm = $("#actionForm");
         
         $(".movepage").on("click", function(e) {
@@ -203,87 +237,200 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
         
      // 메일보내기 name="btn_mail_send" actionForm 을 이용한 시작했던 목록의 페이지이동작업
-        $("button[name='btn_mail_send']").on("click",function() {
-            let idx = $(this).data("idx");
+      /*  $("button[name='btn_mail_send']").on("click",function() {
+            let idx = $(this).data("mail_idx");
 
-            location.href = "/admin/user/mailingsendform?idx=" + idx;
+            location.href = "/admin/members/mailsendform?idx=" + idx;
         });
-      
+     */ 
+     
       // 메일수정 name="btn_mail_edit" actionForm 을 이용한 시작했던 목록의 페이지이동작업
       $("button[name='btn_mail_edit']").on("click",function() {
-        let idx = $(this).data("idx");
+        let idx = $(this).data("mail_idx");
 
-        location.href = "/admin/user/mailingsendform?idx=" + idx;
+        location.href = "/admin/members/mailsendform?idx=" + idx;
       });
 
       // 메일등록 id="btn_mail_register"
-      $("button[name='btn_mail_register']").on("click",function() {
+      $("#btn_mail_insert").on("click",function() {
 
-        location.href = "/admin/user/mailingform?idx=" + idx;
+        location.href = "/admin/members/mem_mail_form?idx=";
       });
       
-      
-     
-     // 제목형 체크박스 체크라기
-     let isCheck = true;
-     $("#checkAll").on("click", function() {
+      // 메일삭제 name="btn_mail_del"
+      $("button[name='btn_mail_del']").on("click",function() {
+		let idx = $(this).data("mail_idx");
 
-     	$("input[name='check']").prop("checked", this.checked);
-     	isCheck = this.checked;
-     });
-     
-     // 목록에서 데이터형 체크하기
-     $("input[name='check']").on("click", function() {
-    	 $("#checkAll").prop("checked", this.checked);
-    	 
-    	 $("input[name='check']").each(function() {
-			if(!$(this).is(":checked")) {
-				$("#checkAll").prop("checked", false);
-			}
-    	 	
-    	 });
-     
-     });
-     
-     $("#btn_check_send").on("click", function() {
-		if($("input[name='check']:checked").length == 0) {
-		alert("보낼 메일들을 체크해주세요.");
-		return;
-		}
-		
-		// 자바스크립트 배열분법
-		// 각각 배열로 저장해서 스프링으로 보낸다.
-		let pro_num_arr = [];     // 체크된 상품코드등이 저장될 배열
-		let pro_price_arr = [];   // 체크된 상품가격들이 저장될 배열
-		let pro_buy_arr = [];     // 체크된 상품진열정보들이 저장될 배열
-    	
-		// 체크된 상태를 접근
-		$("input[name='check']:checked").each(function() {
-			pro_num_arr.push($(this).val());
-			pro_price_arr.push($(this).parent().parent().find("input[name='pro_price']").val());
-			pro_buy_arr.push($(this).parent().parent().find("select[name='pro_buy']").val());
-		
-		});
-		
-		console.log("상품코드: ", pro_num_arr);
-		console.log("상품가격: ", pro_price_arr);
-		console.log("상품진열: ", pro_buy_arr);
-		
+		if(!confirm("메일을 삭제하시겠습니까?")) return;
 		$.ajax({
-			url: '/admin/product/pro_check_box',
-			type: 'post',
-			data: {pro_num_arr : pro_num_arr, pro_price_arr : pro_price_arr, pro_buy_arr : pro_buy_arr},
-			datatype: 'text',
+			url: '/admin/members/mail_delete/' + idx,
+			headers: {
+				"Content-Type" : "application/json", "x-HTTP-Method-Override" : "DELETE"
+			},
+			type:'delete',
+			dataType:'text',
 			success: function(result) {
-				if(result == 'success') {
-					alert("체크된 상품들이 수정되었습니다.");
+				alert("메일이 삭제되었습니다.");
+				location.reload();
 			}
-		}
-		
 		});
-    	 
+		
+	  });
+      
+   	  // 수신자 등록 버튼 클릭 이벤트
+      $("button[name='mem_mail_insert']").on("click", function() {
+          let mail_idx = $(this).data("mail_idx");
+
+          $.ajax({
+              url: '/admin/members/email_list',
+              type: 'GET',
+              dataType: 'json',
+              success: function(data) {
+                  let emailList = $("#emailList");
+                  emailList.empty(); // 기존 목록 비우기
+                  
+                  // 각 이메일을 <option> 요소로 만들어 <select> 요소에 추가합니다.
+                  data.forEach(function(email) {
+                      emailList.append(`<option value="${email}">${email}</option>`);
+                  });
+                  $("#emailModal").modal('show');
+              },
+              error: function() {
+                  alert("이메일 목록을 불러오는 데 실패했습니다.");
+              }
+          });
+      });
+   	  
+   	  // 수신자등록저장
+      $("#saveEmails").on("click", function() {
+		
+    	let selectedEmails = $("#emailList").val();
+		if(!selectedEmails) {
+			alert("선택된 이메일이 없습니다.")
+			return;
+		}
+		// 선택된 이메일 주소들을 ReceiverVO 객체 형태로 변환
+        let receivers = selectedEmails.map(email => ({ email: email })); // 배열의 각 이메일 주소를 { email: "email1@example.com" }와 같은 객체로 변환합니다.
+		//console.log(receivers);
+        //return;
+
+        $.ajax({
+            url: '/admin/members/save_recipients',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(receivers),
+            success: function(response) {
+                alert("수신자 목록이 저장되었습니다.");
+                $("#emailModal").modal('hide'); // 모달 닫기
+            },
+            error: function() {
+                alert("수신자 목록 저장에 실패했습니다.");
+            }
+        });
+    });
+   	  
+   	// 모달이 닫힐 때 이메일 목록 저장
+     $("#emailModal").on("hidden.bs.modal", function() {
+         savedEmails = $("#emailList").val();
+        // console.log(savedEmails);
+     	// return;
      });
-     
+      
+   	  
+   // 메일 발송 버튼 클릭 이벤트
+      $("button[name='btn_mail_send']").on("click", function() {
+    	let selectedEmails = savedEmails;
+    	console.log(selectedEmails);
+    	return;
+    	
+        let mail_idx = $(this).data("mail_idx");
+
+        // 선택한 수신자가 있으면 수신자에게 보내고, 없으면 모든 회원 이메일로 보냅니다.
+         let emailsToSend = selectedEmails.length > 0 ? selectedEmails : [];
+
+        // 메일 발송 요청
+        $.ajax({
+          url: '/admin/members/mem_mail_send',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            mail_idx: mail_idx,
+            email : selectedEmails
+          }),
+          success: function(response) {
+            alert("수신자메일을 성공적으로 발송되었습니다.");
+          },
+          error: function() {
+            alert("메일 발송에 실패했습니다.");
+          }
+        });
+      });
+
+   	  
+   	  
+	  /*
+	  
+      // 제목형 체크박스 체크라기
+	  let isCheck = true;
+	  $("#checkAll").on("click", function() {
+ 
+		  $("input[name='check']").prop("checked", this.checked);
+		  isCheck = this.checked;
+	  });
+	  
+	  // 목록에서 데이터형 체크하기
+	  $("input[name='check']").on("click", function() {
+		  $("#checkAll").prop("checked", this.checked);
+		  
+		  $("input[name='check']").each(function() {
+			 if(!$(this).is(":checked")) {
+				 $("#checkAll").prop("checked", false);
+			 }
+			  
+		  });
+	  
+	  });
+	  
+	  $("#btn_check_modify").on("click", function() {
+		 if($("input[name='check']:checked").length == 0) {
+		 alert("수정할 상품을 체크해주세요.");
+		 return;
+		 }
+		 
+		 // 자바스크립트 배열분법
+		 // 각각 배열로 저장해서 스프링으로 보낸다.
+		 let pro_num_arr = [];     // 체크된 상품코드등이 저장될 배열
+		 let pro_price_arr = [];   // 체크된 상품가격들이 저장될 배열
+		 let pro_buy_arr = [];     // 체크된 상품진열정보들이 저장될 배열
+		 
+		 // 체크된 상태를 접근
+		 $("input[name='check']:checked").each(function() {
+			 pro_num_arr.push($(this).val());
+			 pro_price_arr.push($(this).parent().parent().find("input[name='pro_price']").val());
+			 pro_buy_arr.push($(this).parent().parent().find("select[name='pro_buy']").val());
+		 
+		 });
+		 
+		 console.log("상품코드: ", pro_num_arr);
+		 console.log("상품가격: ", pro_price_arr);
+		 console.log("상품진열: ", pro_buy_arr);
+		 
+		 $.ajax({
+			 url: '/admin/product/pro_check_box',
+			 type: 'post',
+			 data: {pro_num_arr : pro_num_arr, pro_price_arr : pro_price_arr, pro_buy_arr : pro_buy_arr},
+			 datatype: 'text',
+			 success: function(result) {
+				 if(result == 'success') {
+					 alert("체크된 상품들이 수정되었습니다.");
+			 }
+		 }
+		 
+		 });
+		  
+	  });
+    
+     */
      
         
       }); // ready event end

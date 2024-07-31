@@ -18,4 +18,5 @@ public class MembersVO {
 	private String mgubun;
 	private int    mscount;
 	private Date   date;
+	
 }

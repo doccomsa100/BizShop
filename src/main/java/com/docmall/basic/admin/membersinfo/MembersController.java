@@ -11,17 +11,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.docmall.basic.common.constants.Constants;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.common.util.FileManagerUtils;
+import com.docmall.basic.mail.EmailDTO;
 import com.docmall.basic.mail.EmailService;
 import com.docmall.basic.user.UserService;
 import com.docmall.basic.user.UserVo;
@@ -49,7 +55,7 @@ public class MembersController {
 	@Value("${file.ckdir}")
 	private String uploadCKPath;
 	
-	
+	// 회원리스트
 	@GetMapping("/member_list")
 	public void member_list(Criteria cri, Model model) {
 		
@@ -69,6 +75,7 @@ public class MembersController {
 		model.addAttribute("pageMaker", pageDTO);
 	}
 	
+	// 회원탕퇴
 	@PostMapping("/member_delete")
 	public String member_delete(Criteria cri, String user_id) {
 		membersService.member_delete(user_id);
@@ -76,6 +83,7 @@ public class MembersController {
 		return "redirect:/admin/members/member_list" + cri.getListLink();
 	}
 	
+	// 회원등록 폼
 	@GetMapping("/member_insert")
 	public void member_insert() {
 		
@@ -120,7 +128,7 @@ public class MembersController {
 		
 		List<MembersVO> maillist = membersService.mem_mail_list(cri, mtitle);
 		
-		int totalcount = membersService.getMailListCount(mtitle);
+		int totalcount = membersService.getMailListCount(cri,mtitle);
 		PageDTO pageDTO = new PageDTO(cri, totalcount);
 		
 		model.addAttribute("maillist", maillist);
@@ -144,41 +152,104 @@ public class MembersController {
 		// 메일정보 DB저장
 		membersService.mem_mail_save(vo);
 		
-		log.info("시퀸스: " + vo.getIdx());
-		
 		model.addAttribute("idx", vo.getIdx()); // 메일보내기 횟수작업 사용
 		model.addAttribute("msg", "mem_save");
 		return "/admin/members/mem_mail_form";
 	}
 	
+	// 수신자등록
+	@PostMapping("/save_recipients")
+	public String save_recipients(@RequestBody List<ReceiverVO> r_vo) throws Exception {
+		log.info("저장된메일: " + r_vo);
+		
+		// DB저장
+		// 클라이언트에서 JSON 배열 형태로 수신자 이메일 정보가 서버로 전송됩니다.
+		for(ReceiverVO receiver : r_vo) {
+			membersService.save_recipients(receiver);
+		}
+		
+		return "redirect:/admin/members/mem_mail_list";
+	}
+	
+	// 메일발송 프로세서 
+	@PostMapping("/mem_mail_send")
+	public String mem_mail_send(String email,MembersVO vo, Model model) throws Exception {
+		
+		log.info("메일내용: " + vo);
+		
+		// 등록된 수신자메일 조회
+		List<ReceiverVO> receivers = membersService.getReceiverList(email);
+		
+		// 수신자 목록이 비어 있으면 전체 회원 메일 정보를 조회
+		String[] emailArr;
+		if(receivers.isEmpty()) {
+			emailArr = membersService.getALLMemberMail();
+		}else {
+			// 수신자 이메일 주소를 배열로 변환
+			emailArr = new String[receivers.size()];
+			for(int i = 0 ; i<receivers.size(); i++) {
+				emailArr[i] = receivers.get(i).getEmail();
+			}
+		}
+		
+		// 이 객체는 발신자 이름, 발신자 이메일, 수신자 이메일(빈 문자열), 메일 제목, 메일 내용을 포함합니다.
+		EmailDTO emailDTO = new EmailDTO("BizShop", "BizShop", "", vo.getMtitle(),vo.getMcontent());
+		
+		
+		emailService.snedMail(emailDTO, emailArr);
+		
+		
+		// 메일발송 횟수 업데이트
+		membersService.mailSendCountUpdate(vo.getIdx());
+		
+		model.addAttribute("msg", "send");
+		
+		return "redirect:/admin/members/mem_mail_form";
+	}
 	
 	
+	// 메일목록에서 메일발송
+	@GetMapping("/mailsendform")
+	public void mailsendform(int idx,Model model) throws Exception {
+		
+		MembersVO vo = membersService.getMailSendinfo(idx);
+		
+		model.addAttribute("vo", vo);
+	}
 	
+	// 수정
+	@PostMapping("/mailedit")
+	public String mailedit(@ModelAttribute("vo") MembersVO vo, Model model) throws Exception {
+		
+		membersService.mailedit(vo);
+		
+		model.addAttribute("msg", "mem_modify");
+		
+		return "/admin/members/mailsendform";
+		
+	}
 	
+	// 메일삭제
+	@DeleteMapping("/mail_delete/{idx}")
+	public ResponseEntity<String> member_delete(@PathVariable("idx") int idx) {
+		ResponseEntity<String> entity = null;
+		
+		membersService.maildelete(idx);
+		entity = new ResponseEntity<String>(HttpStatus.OK);
+		
+		return entity;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// 수신자메일리스트
+	@GetMapping("/email_list")
+	@ResponseBody
+	public String[] getEmaillist() throws Exception {
+		
+		// 회원테이블에서 전체회원 메일정보를 읽어오는 작업
+		String[] emailList = membersService.getALLMemberMail();
+		return emailList;
+		
+	}
 	
 	// CKEditor 상품설명 이미지 업로드
 	// MultipartFile upload : CKeditor의 업로드탭에서 나온 파일첨부 <input type="file" name="upload"> 을 참조함.

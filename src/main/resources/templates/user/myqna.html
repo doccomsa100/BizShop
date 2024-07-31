@@ -42,16 +42,15 @@
   <div class="container">
     <h1 class="mt-3 mb-4 text-center">나의 QnA</h1>
     <div class="row">
-	    <div class="col-4">
+	    <div class="col-md-2">
 	        <section th:replace="~{/user/comm/mypage_meun}">
 	    	</section>
 	    </div>
-	    
+	    <div class="col-md-10">
 	      <div class="table-responsive">	
 	    	<table class="table table-bordered">
 				<thead class="thead-dark">							
 						<tr>
-							<th style="width: 2%"><input type="checkbox" id="checkAll"></th>
 							<th style="width: 8%">글번호</th>
 							<th style="width: 8%">상품번호</th>
 							<th style="width: 10%">상품이미지</th>
@@ -68,10 +67,9 @@
 								<td colspan="10" class="text-center">나의 QnA가 없습니다.</td>
 							</tr>	
 							<tr th:if="${!#lists.isEmpty(userqnalist)}" th:each="userqna : ${userqnalist}">
-								<td><input type="checkbox" name="check" th:value="${userqna.pro_num }"></td>
 								<td>[[${userqna.qna_idx}]]</td>
 								<td>
-									 <a th:href="@{/product/pro_detail/{pro_num}(pro_num=${userqna.pro_num})}">[[${userqna.pro_num}]]</a>
+									 <span>[[${userqna.pro_num}]]</span>
 								</td>
 								<td>
 									<img th:src="${'/qnaboard/image_display?dateFolderName=' + userqna.pro_up_folder + '&fileName=' + userqna.pro_img}" style="width: 80px;height: 80px;">
@@ -86,7 +84,7 @@
 							</tbody>
 						</table>
 					</div>
-				
+				</div>
 	</div>
 <div th:replace ="~{layout/comm/footer :: footerFragment}" ></div>
 </div>

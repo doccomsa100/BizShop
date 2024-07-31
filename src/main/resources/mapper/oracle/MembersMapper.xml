@@ -93,6 +93,26 @@
 		(#{idx}, #{mtitle}, #{mcontent}, #{mgubun})
 </insert>
 		
+	<insert id="save_recipients" parameterType="ReceiverVO">
+		
+		INSERT INTO 
+			recipient_emails(email_id ,email)
+		VALUES
+			(SEQ_RECIPIENT_ID.NEXTVAL,#{email})
+	</insert>	
+		
+	<select id="getReceiverList" parameterType="String" resultType="ReceiverVO">
+		
+		SELECT
+			email
+		FROM
+			recipient_emails
+	
+	</select>	
+		
+		
+		
+		
 	<select id="mem_mail_list" parameterType="Criteria"  resultMap="MembersMap">
 	
 		SELECT 
@@ -132,6 +152,58 @@
 	<sql id="search_title">
 		<if test="mtitle != null and !mtitle.equals('')">AND mail_title like  '%' || #{mtitle} || '%'</if>
 	</sql>
+	
+	<select id="getALLMemberMail" resultType="String">
+	
+		SELECT 
+			user_email
+		FROM
+			user_tbl
+	
+	
+	</select>
+	
+	<update id="mailSendCountUpdate" parameterType="int">
+	
+		UPDATE
+			mailmng_tbl
+		SET
+			mail_send_count = mail_send_count + 1
+		WHERE
+			mail_idx = #{idx}
+	</update>	
+	
+	<select id="getMailSendinfo" resultMap="MembersMap">
+	
+		SELECT
+			mail_idx, mail_title, mail_content, mail_gubun, mail_send_count, reg_date
+		FROM
+			mailmng_tbl
+		WHERE
+			mail_idx = #{idx}
+	
+	</select>
+	
+	<update id="mailedit" parameterType="MembersVO">
+	
+		UPDATE
+			mailmng_tbl
+		SET
+			mail_title = #{mtitle}, mail_content = #{mcontent}, mail_gubun = #{mgubun},reg_date = sysdate
+		WHERE
+			mail_idx = #{idx}
+	
+	</update>
+	
+	<delete id="maildelete" parameterType="int">
+	
+		DELETE FROM
+			mailmng_tbl
+		WHERE
+			mail_idx = #{idx}
+	
+	
+	</delete>
 
 
 </mapper>

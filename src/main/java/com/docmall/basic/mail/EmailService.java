@@ -34,15 +34,7 @@ public class EmailService {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		
 		try {
-			// 받는사람의 메일주소
-//			mimeMessage.addRecipient(RecipientType.TO, new InternetAddress(dto.getReceiverMail()));
-//			// 보내는 사람(메일, 이름)
-//			mimeMessage.addFrom(new InternetAddress[] {new InternetAddress(dto.getSenderMail(), dto.getSenderName())});
-//			// 제목
-//			mimeMessage.setSubject(dto.getSubject(), "utf-8");
-//			// 본문내용
-//			mimeMessage.setText(authcode, "utf-8");
-			
+
 			// 메일템플릿으로 타임리프 사용목적으로 아래코드가 구성됨.
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 			mimeMessageHelper.setTo(dto.getReceiverMail()); // 메일수신자
@@ -56,6 +48,30 @@ public class EmailService {
 			e.printStackTrace();
 		}
 	}
+	
+	// 관리자 회원목록에서 이메일 단체메일을 위해 하나 더 만든 메서드
+	public void snedMail(EmailDTO dto, String[] emailArr) {
+		// 메일구성정보 담당(받는사람, 보내는사람, 받는사람 메일주소, 본문내용)
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		
+		try {
+
+			// 메일템플릿으로 타임리프 사용목적으로 아래코드가 구성됨.
+			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+			mimeMessageHelper.setTo(emailArr); // 메일수신자
+			mimeMessageHelper.setFrom(new InternetAddress(dto.getSenderMail(), dto.getSenderName()));
+			mimeMessageHelper.setSubject(dto.getSubject()); // 메일제목
+			mimeMessageHelper.setText(dto.getMessage(), true); // 메세지 내용, true: HTML 내용을 사용함
+														
+			// 메일발송기능 
+			mailSender.send(mimeMessage);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 		
 	// thymeleaf를 통한 html 적용
 	// String authcode : 인증코드.  String type : email.html 확장자만 빠지고 들어옴

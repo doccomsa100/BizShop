@@ -33,7 +33,7 @@ public class OrderController {
 	
 	private final UserService userService;
 	
-	
+	// 주문리스트
 	@GetMapping("/productorder")
 	public String productorder(@RequestParam(value = "type", defaultValue = "direct") String type, CartVO vo, Model model, HttpSession session) throws Exception {
 		

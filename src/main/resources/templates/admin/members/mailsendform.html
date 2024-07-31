@@ -43,12 +43,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <section class="content-header">
           <h1>
             메일
-            <small>메일을 등록하는 곳입니다.</small>
+            <small>메일을 관리하는 곳입니다.</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="/admin/admin_meun"><i class="fa fa-dashboard"></i>메인페이지</a></li>
             <li class="active">메일관리</li>
-            <li class="active">메일등록</li>
+            <li class="active">메일발송및수정</li>
           </ol>
         </section>
 
@@ -62,7 +62,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="box-header with-border">
                 </div><!-- /.box-header -->
                 <!-- form start -->				<!-- 파일업로드 할떄만 enctype="multipart/form-data" -->
-                <form action="/admin/members/memsendmail"  method="post" class="form-horizontal" id="mailinfofrom" name="mailinfofrom">
+                <form action="/admin/members/mailedit"  method="post" class="form-horizontal" id="mailinfofrom" name="mailinfofrom">
                   <div class="box-body">
                   	<div class="form-group row">
 						<label for="title" class="col-sm-1 col-form-lobel">구분</label>                  		
@@ -78,21 +78,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   	  </div>
                   	</div>	
                     	<div class="form-group row">
-						  <label for="title" class="col-sm-1 col-form-label">메일제목</label>
+						  <label for="mtitle" class="col-sm-1 col-form-label">메일제목</label>
 			              <div class="col-sm-5">
-			                <input type="hidden" name="idx" th:value="${idx}">
+			              	<input type="hidden" name="idx" th:value="${vo.idx}">
 			                <input type="text" class="form-control" name="mtitle" id="mtitle" placeholder="메일제목 입력..." th:value="${vo.mtitle}">
 			              </div>
 						</div>
 						<div class="form-group row">
-						  <label for="title" class="col-sm-1 col-form-label">메일내용</label>
+						  <label for="mcontent" class="col-sm-1 col-form-label">메일내용</label>
 			              <div class="col-sm-11">
-			                <textarea class="form-control" name="mcontent" id="mcontent" rows="6" style="width: 860px;" th:value="${vo.mcontent}" ></textarea>
+			                <textarea class="form-control" name="mcontent" id="mcontent" rows="6" style="width: 860px;" th:text="${vo.mcontent}" ></textarea>
 			              </div>
 			            </div>
                   </div><!-- /.box-body -->
                   <div class="box-footer text-center">
-                    <button type="button" id="btn_mail_save" class="btn btn-primary">메일내용 저장</button>
+                    <button type="submit" id="btn_mail_modify" class="btn btn-primary">수정</button>
                     <button type="button" id="btn_mail_send" class="btn btn-primary">메일발송</button>
                     <button type="button" id="btn_mail_list" class="btn btn-primary">목록</button>
                   </div><!-- /.box-footer -->
@@ -117,8 +117,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	<th:block layout:fragment="script">
 	  <script th:inline="javascript">
   		let msg = [[${msg}]];
-  		if(msg == "mem_save") {
-			alert("메일정보가 저장되었습니다.");
+  		if(msg == "mem_modify") {
+			alert("메일정보가 수정되었습니다.");
   		}
 	  </script>
 	
@@ -144,13 +144,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         // from태그
         let mailinfofrom = $("#mailinfofrom");
         
-        // 메일저장
-        $("#btn_mail_save").on("click",function() {
-        	mailinfofrom.attr("action", "/admin/members/mem_mail_save");
-        	mailinfofrom.submit();
-        });
-        
         // 메일보내기
+		$("#btn_mail_send").on("click", function() {
+			mailinfofrom.attr("action", "/admin/members/mem_mail_send");
+			mailinfofrom.submit();
+			
+		});
+        
         
         // 메일목록
         $("#btn_mail_list").on("click", function() {
