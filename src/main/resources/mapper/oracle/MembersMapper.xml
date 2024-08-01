@@ -96,10 +96,22 @@
 	<insert id="save_recipients" parameterType="ReceiverVO">
 		
 		INSERT INTO 
-			recipient_emails(email_id ,email)
+			recipient_emails(mail_idx ,email)
 		VALUES
 			(SEQ_RECIPIENT_ID.NEXTVAL,#{email})
 	</insert>	
+	
+	
+	<delete id="deleteRecipientByEmail" parameterType="String">
+
+	   DELETE FROM 
+	   		recipient_emails
+	   WHERE 
+	   		email = #{email}
+
+	</delete>
+	
+	
 		
 	<select id="getReceiverList" parameterType="String" resultType="ReceiverVO">
 		
@@ -173,7 +185,7 @@
 			mail_idx = #{idx}
 	</update>	
 	
-	<select id="getMailSendinfo" resultMap="MembersMap">
+	<select id="getMailModifyinfo" resultMap="MembersMap">
 	
 		SELECT
 			mail_idx, mail_title, mail_content, mail_gubun, mail_send_count, reg_date
@@ -201,9 +213,7 @@
 			mailmng_tbl
 		WHERE
 			mail_idx = #{idx}
-	
-	
 	</delete>
-
+	
 
 </mapper>

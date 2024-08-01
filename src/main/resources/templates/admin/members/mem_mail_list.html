@@ -4,10 +4,27 @@ This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout/adminlayout}">
-  <head>
+  	<th:block layout:fragment="css">
+	<style>
+  	
+  	.table td,
+    .table th {
+        /* 테이블 셀에 기본 padding과 border 설정 */
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .table .title-cell,
+    .table .content-cell {
+        /* 제목과 내용 셀의 최대 너비와 넘치는 내용 처리 */
+        max-width: 200px; /* 원하는 최대 너비 */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     
-    
-  </head>
+    </style>
+   </th:block> 
   <!--
   BODY TAG OPTIONS:
   =================
@@ -86,25 +103,26 @@ scratch. This page gets rid of all links and provides the needed markup only.
 						<table class="table table-bordered">
 						  <thead>
 							<tr>
-							    <th style="width: 2%"><input type="checkbox" id="checkAll"></th>
 								<th style="width: 8%">번호</th>
 								<th style="width: 10%">메일제목</th>
+								<th style="width: 10%">메일내용</th>
 								<th style="width: 10%">발송횟수</th>
 								<th style="width: 8%">등록일</th>
-								<th style="width: 10%">수신자등록</th>
+								<th style="width: 15%">수신자등록</th>
 								<th style="width: 10%">관리</th>
 								<th style="width: 15%">발송</th>
 							</tr>
 						</thead>	
 						<tbody class="text-end">	
 							<tr th:each="mail : ${maillist}">
-								<td><input type="checkbox" name="check" th:value="${mail.idx}"></td>
 								<td>[[${mail.idx}]]</td>
-								<td>[[${mail.mtitle}]]</td>
+								<td class="title-cell" id="mailtitle">[[${mail.mtitle}]]</td>
+								<td class="content-cell" id="mailcontent">[[${mail.mcontent}]]</td>
 								<td><span th:text="${mail.mscount}"></span></td>
 								<td th:text="${#dates.format(mail.date, 'yyyy-MM-dd HH:mm:ss')}"></td>
 								<td>
 									<button type="button" class="btn btn-primary" name="mem_mail_insert" th:data-mail_idx="${mail.idx}">수신자등록하기</button>
+									<button type="button" class="btn btn-primary" name="mem_mail_insert" th:data-mail_idx="${mail.idx}">수신자삭제</button>
 								</td>
 								<td>
 									<button type="button" class="btn btn-primary" name="btn_mail_edit" th:data-mail_idx="${mail.idx}">수정</button>
@@ -237,18 +255,88 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
         
      // 메일보내기 name="btn_mail_send" actionForm 을 이용한 시작했던 목록의 페이지이동작업
-      /*  $("button[name='btn_mail_send']").on("click",function() {
+        $("button[name='btn_mail_send']").on("click",function() {
             let idx = $(this).data("mail_idx");
+            // console.log(idx);
+           	// return;
 
-            location.href = "/admin/members/mailsendform?idx=" + idx;
+           	// 메일 제목과 내용을 가져옵니다.
+		    let mailTitle = $("#mailtitle").html();
+		    let mailContent = $("#mailcontent").html();
+		 	
+		    // 메일 제목과 내용이 제대로 정의되었는지 확인합니다.
+		    if (!mailTitle) {
+		        alert("메일 제목이 설정되지 않았습니다.");
+		        return; // 함수 종료
+		    }
+		    if (!mailContent) {
+		        alert("메일 내용이 설정되지 않았습니다.");
+		        return; // 함수 종료
+		    }   	
+           	
+            // 로컬스토리지에 저장된 수신자목록을 가지고 옵니다.
+            let selectedEmails = JSON.parse(localStorage.getItem('savedEmails')) || [];
+            // console.log(selectedEmails);
+            // return;
+            
+            // 이메일 전송 목록을 초기화합니다.
+    		let emailsToSend = selectedEmails.length > 0 ? selectedEmails : [];
+         
+    		 // 수신자 목록이 비어 있는 경우 경고 메시지와 확인 요청
+    	    if (emailsToSend.length === 0) {
+    	        if (!confirm("수신자 목록이 비어 있습니다. 전체 회원에게 메일을 발송하시겠습니까?")) {
+    	            return; // 사용자가 취소하면 함수 종료
+    	        }
+    	        // 전체 회원에게 발송할 경우
+    	        emailsToSend = []; // 빈 배열로 유지 (서버에서 전체 회원을 처리할 것임)
+    	    } else {
+				// 수신자가 선택된경우
+				if(!confirm("수신자가 선택되어있습니다. 메일을 발송하시겠습니까?")) {
+				return;
+				}
+    	    }
+    	    console.log("Selected Emails:", selectedEmails);
+    	    console.log("Emails to Send:", emailsToSend);
+            
+            //let emailsToSend = selectedEmails.length > 0 ? selectedEmails : [];
+            
+         	// 요청 데이터 정의
+            let requestData = {
+                mail_idx: idx,
+                email: emailsToSend,
+                mtitle: mailTitle,
+                mcontent: mailContent
+            };
+            
+            //console.log(requestData); // 데이터 확인
+            //return;
+            
+            // 서버로 메일 발송 요청
+            $.ajax({
+                url: '/admin/members/mem_mail_send',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(response) {
+                    alert("메일을 성공적으로 발송되었습니다.");
+                 	// 로컬스토리지에서 수신자 목록을 지웁니다.
+                    localStorage.removeItem('savedEmails');
+                    // 목록 페이지로 이동
+                    location.href = "/admin/members/mem_mail_list";
+                },
+                error: function() {
+                    alert("메일 발송에 실패했습니다.");
+                }
+            });
+         //   location.href = "/admin/members/mailsendform?idx=" + idx;
         });
-     */ 
+      
      
       // 메일수정 name="btn_mail_edit" actionForm 을 이용한 시작했던 목록의 페이지이동작업
       $("button[name='btn_mail_edit']").on("click",function() {
         let idx = $(this).data("mail_idx");
 
-        location.href = "/admin/members/mailsendform?idx=" + idx;
+        location.href = "/admin/members/mailmodifyform?idx=" + idx;
       });
 
       // 메일등록 id="btn_mail_register"
@@ -260,7 +348,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       // 메일삭제 name="btn_mail_del"
       $("button[name='btn_mail_del']").on("click",function() {
 		let idx = $(this).data("mail_idx");
-
+		
+		
 		if(!confirm("메일을 삭제하시겠습니까?")) return;
 		$.ajax({
 			url: '/admin/members/mail_delete/' + idx,
@@ -309,16 +398,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 			alert("선택된 이메일이 없습니다.")
 			return;
 		}
-		// 선택된 이메일 주소들을 ReceiverVO 객체 형태로 변환
-        let receivers = selectedEmails.map(email => ({ email: email })); // 배열의 각 이메일 주소를 { email: "email1@example.com" }와 같은 객체로 변환합니다.
-		//console.log(receivers);
+		
+		 // 선택된 이메일 주소들을 저장
+        localStorage.setItem('savedEmails', JSON.stringify(selectedEmails));
+        //console.log(selectedEmails);
         //return;
-
+        
+        
         $.ajax({
             url: '/admin/members/save_recipients',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(receivers),
+            data: JSON.stringify(selectedEmails.map(email => ({ email: email }))), // 배열의 각 이메일 주소를 { email: "email1@example.com" }와 같은 객체로 변환합니다.
             success: function(response) {
                 alert("수신자 목록이 저장되었습니다.");
                 $("#emailModal").modal('hide'); // 모달 닫기
@@ -328,45 +419,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         });
     });
-   	  
-   	// 모달이 닫힐 때 이메일 목록 저장
-     $("#emailModal").on("hidden.bs.modal", function() {
-         savedEmails = $("#emailList").val();
-        // console.log(savedEmails);
-     	// return;
-     });
-      
-   	  
-   // 메일 발송 버튼 클릭 이벤트
-      $("button[name='btn_mail_send']").on("click", function() {
-    	let selectedEmails = savedEmails;
-    	console.log(selectedEmails);
-    	return;
-    	
-        let mail_idx = $(this).data("mail_idx");
-
-        // 선택한 수신자가 있으면 수신자에게 보내고, 없으면 모든 회원 이메일로 보냅니다.
-         let emailsToSend = selectedEmails.length > 0 ? selectedEmails : [];
-
-        // 메일 발송 요청
-        $.ajax({
-          url: '/admin/members/mem_mail_send',
-          type: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({
-            mail_idx: mail_idx,
-            email : selectedEmails
-          }),
-          success: function(response) {
-            alert("수신자메일을 성공적으로 발송되었습니다.");
-          },
-          error: function() {
-            alert("메일 발송에 실패했습니다.");
-          }
-        });
-      });
-
-   	  
    	  
 	  /*
 	  

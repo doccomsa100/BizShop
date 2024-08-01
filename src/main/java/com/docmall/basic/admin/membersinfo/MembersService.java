@@ -4,14 +4,17 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.user.UserVo;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MembersService {
 
 	private final MembersMapper membersMapper;
@@ -41,10 +44,19 @@ public class MembersService {
 		membersMapper.save_recipients(r_vo);
 	}
 	
-	// 등록된수신자목록
-	public List<ReceiverVO> getReceiverList(String email) {
-		return membersMapper.getReceiverList(email);
+	// 기존수신자 삭제
+	public void deleteRecipientByEmail(String email) {
+		membersMapper.deleteRecipientByEmail(email);
 	}
+	
+	// 등록된수신자목록
+	public List<ReceiverVO> getReceiverList(List<String> emailList) {
+        // 이메일 목록을 쉼표로 구분된 문자열로 변환
+        String emailStr = String.join(",", emailList);
+        
+        // 쉼표 구분 문자열을 splitList라는 이름으로 쿼리에 전달
+        return membersMapper.getReceiverList(emailStr);
+    }
 	
 	// 메일발송리스트
 	public List<MembersVO> mem_mail_list(Criteria cri,String mtitle) {
@@ -67,8 +79,8 @@ public class MembersService {
 	}
 	
 	// 메일목록에서 메일발송
-	public MembersVO getMailSendinfo(int idx) {
-		return membersMapper.getMailSendinfo(idx);
+	public MembersVO getMailModifyinfo(int idx) {
+		return membersMapper.getMailModifyinfo(idx);
 	}
 	
 	// 메일수정

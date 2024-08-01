@@ -21,8 +21,11 @@ public interface MembersMapper {
 	// 메일정보 DB저장하기
 	void mem_mail_save(MembersVO vo);
 	
-	// 수신등록
+	// 수신자등록
 	void save_recipients(ReceiverVO r_vo);
+	
+	// 기존수신자 삭제
+	void deleteRecipientByEmail(String email);
 	
 	// 등록된수신자목록
 	List<ReceiverVO> getReceiverList(String email);
@@ -40,11 +43,12 @@ public interface MembersMapper {
 	void mailSendCountUpdate(int idx);
 	
 	// 메일목록에서 메일발송
-	MembersVO getMailSendinfo(int idx);
+	MembersVO getMailModifyinfo(int idx);
 	
 	// 메일수정
 	void mailedit(MembersVO vo);
 	
 	// 메일삭제
 	void maildelete(int idx);
+	
 }

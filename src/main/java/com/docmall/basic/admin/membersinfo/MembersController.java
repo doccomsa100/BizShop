@@ -3,7 +3,9 @@ package com.docmall.basic.admin.membersinfo;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -141,7 +143,7 @@ public class MembersController {
 	// 메일폼
 	@GetMapping("/mem_mail_form")
 	public void mem_mail_form(@ModelAttribute("vo") MembersVO vo) {
-		
+		log.info("폼 초기화: " + vo);
 	}
 	
 	// 메일저장
@@ -162,6 +164,16 @@ public class MembersController {
 	public String save_recipients(@RequestBody List<ReceiverVO> r_vo) throws Exception {
 		log.info("저장된메일: " + r_vo);
 		
+		// 중복을 피하기 위해 이메일 목록을 Set으로 변환
+		Set<String> emailset = new HashSet<>();
+		for(ReceiverVO receiver : r_vo) {
+			emailset.add(receiver.getEmail());
+		}
+		
+		// 수신자 등록을 처리하기 전에, 등록할 이메일 목록의 중복을 제거하고 기존 수신자를 삭제합니다.
+		for(String email : emailset) {
+			membersService.deleteRecipientByEmail(email);
+		}
 		// DB저장
 		// 클라이언트에서 JSON 배열 형태로 수신자 이메일 정보가 서버로 전송됩니다.
 		for(ReceiverVO receiver : r_vo) {
@@ -173,12 +185,15 @@ public class MembersController {
 	
 	// 메일발송 프로세서 
 	@PostMapping("/mem_mail_send")
-	public String mem_mail_send(String email,MembersVO vo, Model model) throws Exception {
+	public String mem_mail_send(@RequestBody EmailRequestVO vo, Model model) throws Exception {
 		
 		log.info("메일내용: " + vo);
 		
+		// 이메일 목록을 List<String>으로 변환
+	    List<String> emailList = vo.getEmail();
+		
 		// 등록된 수신자메일 조회
-		List<ReceiverVO> receivers = membersService.getReceiverList(email);
+		List<ReceiverVO> receivers = membersService.getReceiverList(emailList);
 		
 		// 수신자 목록이 비어 있으면 전체 회원 메일 정보를 조회
 		String[] emailArr;
@@ -194,13 +209,14 @@ public class MembersController {
 		
 		// 이 객체는 발신자 이름, 발신자 이메일, 수신자 이메일(빈 문자열), 메일 제목, 메일 내용을 포함합니다.
 		EmailDTO emailDTO = new EmailDTO("BizShop", "BizShop", "", vo.getMtitle(),vo.getMcontent());
-		
+//		log.info("EmailDTO 제목: " + emailDTO.getSubject());
+//		log.info("EmailDTO 내용: " + emailDTO.getMessage());
 		
 		emailService.snedMail(emailDTO, emailArr);
 		
 		
 		// 메일발송 횟수 업데이트
-		membersService.mailSendCountUpdate(vo.getIdx());
+		membersService.mailSendCountUpdate(vo.getMail_idx());
 		
 		model.addAttribute("msg", "send");
 		
@@ -208,11 +224,11 @@ public class MembersController {
 	}
 	
 	
-	// 메일목록에서 메일발송
-	@GetMapping("/mailsendform")
-	public void mailsendform(int idx,Model model) throws Exception {
+	// 메일수정폼
+	@GetMapping("/mailmodifyform")
+	public void mailmodifyform(int idx,Model model) throws Exception {
 		
-		MembersVO vo = membersService.getMailSendinfo(idx);
+		MembersVO vo = membersService.getMailModifyinfo(idx);
 		
 		model.addAttribute("vo", vo);
 	}
@@ -225,7 +241,7 @@ public class MembersController {
 		
 		model.addAttribute("msg", "mem_modify");
 		
-		return "/admin/members/mailsendform";
+		return "/admin/members/mailmodifyform";
 		
 	}
 	

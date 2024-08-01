@@ -93,7 +93,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </div><!-- /.box-body -->
                   <div class="box-footer text-center">
                     <button type="submit" id="btn_mail_modify" class="btn btn-primary">수정</button>
-                    <button type="button" id="btn_mail_send" class="btn btn-primary">메일발송</button>
                     <button type="button" id="btn_mail_list" class="btn btn-primary">목록</button>
                   </div><!-- /.box-footer -->
                 </form>
@@ -140,17 +139,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         CKEDITOR.replace("mcontent", ckeditor_config);
 
         console.log("ckediotr 버전: ", CKEDITOR.version);  // ckediotr 버전:  4.12.1 (Standard)
-        
-        // from태그
-        let mailinfofrom = $("#mailinfofrom");
-        
-        // 메일보내기
-		$("#btn_mail_send").on("click", function() {
-			mailinfofrom.attr("action", "/admin/members/mem_mail_send");
-			mailinfofrom.submit();
-			
-		});
-        
         
         // 메일목록
         $("#btn_mail_list").on("click", function() {

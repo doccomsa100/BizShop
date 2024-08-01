@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 public class ReceiverVO {
 
-	private Long    email_id;
+	private Long    mail_idx;
 	private String email;
 	private Date   created_at;
 	
