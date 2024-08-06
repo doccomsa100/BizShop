@@ -46,7 +46,7 @@ public class OrderController {
 			cartService.cart_add(vo);
 		}
 		
-		// 장바구니 목록을 가져옴
+		// 2) 주문하기
 		List<CartProductVO> cart_list = cartService.cart_list(user_id);
 		
 		cart_list.forEach(d_vo -> {

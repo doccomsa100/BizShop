@@ -26,13 +26,22 @@
 <select id="login" resultType="UserVo" parameterType="String">
 
 	SELECT
-		user_id, user_pwd, user_name, user_email, user_zipcode, user_addr, user_deaddr, user_phone, user_datesub, user_update
+		user_id, user_pwd, user_name, user_email, user_zipcode, user_addr, user_deaddr, user_phone,user_visitcount,user_datesub, user_update
 	FROM
 		user_tbl
 	WHERE
 		user_id = #{user_id}
 
 </select>
+
+<update id="updateVisitCount" parameterType="String">
+    UPDATE 
+    	user_tbl
+    SET 
+    	user_visitcount = user_visitcount + 1
+    WHERE 
+    	user_id = #{user_id}
+</update>
 
 <select id="idfind" resultType="String" parameterType="map">
 	

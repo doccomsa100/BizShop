@@ -49,6 +49,14 @@ public class MembersService {
 		membersMapper.deleteRecipientByEmail(email);
 	}
 	
+	// 이메일발송시 수신자정보 삭제
+	public void deletedbRecipientbyEmail(List<String> email) {
+		for(String emails : email) {
+			membersMapper.deletedbRecipientbyEmail(emails);
+		}
+	}
+	
+	
 	// 등록된수신자목록
 	public List<ReceiverVO> getReceiverList(List<String> emailList) {
         // 이메일 목록을 쉼표로 구분된 문자열로 변환
@@ -91,6 +99,11 @@ public class MembersService {
 	// 메일삭제
 	public void maildelete(int idx) {
 		membersMapper.maildelete(idx);
+	}
+	
+	// 체크된메일삭제
+	public void deltetcheckmail(Long idx) {
+		membersMapper.deltetcheckmail(idx);
 	}
 	
 }

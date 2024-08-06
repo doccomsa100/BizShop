@@ -9,19 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.docmall.basic.adminproduct.AdminProductService;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.common.util.FileManagerUtils;
@@ -43,6 +41,7 @@ public class ReviewController {
 	@Value("${file.product.image.user}")
 	private String uploadPath;
 	
+	// 리뷰리스트
 	@GetMapping("/revlist/{pro_num}/{page}")
 	public ResponseEntity<Map<String, Object>> revlist(@PathVariable("pro_num") int pro_num,@PathVariable("page") int page) {
 		ResponseEntity<Map<String, Object>> entity = null;
@@ -55,6 +54,10 @@ public class ReviewController {
 		
 		// 1) 후기목록
 		List<ReviewVO> revlist = reviewService.rev_list(pro_num, cri);
+		revlist.forEach(vo -> {
+			vo.setPro_up_folder(vo.getPro_up_folder().replace("\\", "/"));
+		});
+		
 		
 		// 2) 페이징정보
 		int revcount = reviewService.getCountReviewBypro_num(pro_num);
@@ -69,13 +72,19 @@ public class ReviewController {
 	}
 	
 	// 상품후기 저장
-	@PostMapping(value = "/review_save", consumes = {"application/json"}, produces = {MediaType.TEXT_PLAIN_VALUE})
-	public ResponseEntity<String> review_save(@RequestBody ReviewVO vo, HttpSession session) throws Exception {
+	@PostMapping(value = "/review_save", produces = {MediaType.TEXT_PLAIN_VALUE}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ResponseEntity<String> review_save(@ModelAttribute ReviewVO vo,@RequestParam("uploadFile2") MultipartFile uploadFile ,HttpSession session) throws Exception {
 		ResponseEntity<String> entity = null;
 		
 		String user_id = ((UserVo) session.getAttribute("login_status")).getUser_id();
 		vo.setUser_id(user_id);
 		
+		// 1)상품이미지 업로드
+		String dateFolder = FileManagerUtils.getDateFolder();
+		String saveFilName = FileManagerUtils.uploadFile(uploadPath, dateFolder, uploadFile);
+	
+		vo.setPro_img(saveFilName);
+		vo.setPro_up_folder(dateFolder);
 		
 		log.info("상품후기데이터: " + vo);
 		reviewService.review_save(vo);
@@ -123,7 +132,12 @@ public class ReviewController {
 		
 	}
 	
-	
+	// 리뷰리스트에서 사용할 이미지보여주기
+	@GetMapping("/image_display")
+	public ResponseEntity<byte[]> image_display(String dateFolderName, String fileName) throws Exception {
+		
+		return FileManagerUtils.getFile(uploadPath + dateFolderName, fileName);
+	}
 	
 	
 }

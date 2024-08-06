@@ -547,9 +547,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 		}
 
 		// 주문금액(가격 * 수량)
-		Handlebars.registerHelper("unit_order_tot_price", function(item_price,dt_amount) {
+		Handlebars.registerHelper("unit_order_tot_price", function(item_price,item_amount) {
 
-			return item_price * dt_amount;
+			return item_price * item_amount;
 		});
         
       }); // ready event end

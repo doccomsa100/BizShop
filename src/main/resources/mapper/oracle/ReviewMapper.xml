@@ -5,10 +5,10 @@
 	<select id="rev_list" parameterType="map"  resultType="ReviewVO">
 	
 		SELECT 
-			rev_code, user_id, pro_num, rev_content, rev_title, rev_rate, rev_date
+			rev_code, user_id, pro_num, rev_content, rev_title,pro_up_folder, pro_img ,rev_rate, rev_date
 		FROM (																		<!-- 인라인뷰 -->
 		    	SELECT /*+ INDEX_DESC(review_tbl PK_REVIEW_CODE)  */ 
-		        	ROWNUM AS RN, rev_code, user_id, pro_num, rev_content, rev_title, rev_rate, rev_date
+		        	ROWNUM AS RN, rev_code, user_id, pro_num, rev_content, rev_title,pro_up_folder, pro_img ,rev_rate, rev_date
 		    	FROM
 		        	review_tbl
 		    	WHERE
@@ -39,9 +39,9 @@
 	<insert id="review_save" parameterType="ReviewVO">
 	
 		INSERT INTO
-			review_tbl(rev_code, user_id, pro_num, rev_content, rev_title, rev_rate)
+			review_tbl(rev_code, user_id, pro_num, rev_content, rev_title, rev_rate,pro_up_folder, pro_img)
 		VALUES
-			(SEQ_REVIEW_CODE.NEXTVAL, #{user_id}, #{pro_num}, #{rev_content}, #{rev_title}, #{rev_rate})
+			(SEQ_REVIEW_CODE.NEXTVAL, #{user_id}, #{pro_num}, #{rev_content}, #{rev_title}, #{rev_rate}, #{pro_up_folder},#{pro_img} )
 	
 	</insert>
 	
@@ -59,7 +59,7 @@
 	<select id="rev_modify" parameterType="Integer" resultType="ReviewVO">
 		
 		SELECT
-			rev_code, user_id, pro_num, rev_content, rev_title, rev_rate, rev_date
+			rev_code, user_id, pro_num, rev_content, rev_title,pro_up_folder, pro_img ,rev_rate, rev_date
 		FROM
 			review_tbl
 		WHERE
@@ -71,7 +71,7 @@
 		UPDATE 
 			review_tbl
 		SET
-			rev_content = #{rev_content}, rev_title = #{rev_title}, rev_rate = #{rev_rate}, rev_date = SYSDATE
+			rev_content = #{rev_content}, rev_title = #{rev_title},pro_up_folder = #{pro_up_folder}, pro_img = #{pro_img} ,rev_rate = #{rev_rate}, rev_date = SYSDATE
 		WHERE
 			rev_code = #{rev_code}
 	

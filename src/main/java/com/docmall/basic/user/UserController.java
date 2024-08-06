@@ -108,6 +108,15 @@ public class UserController {
 			if(passwordEncoder.matches(dto.getUser_pwd(), vo.getUser_pwd())) { // 사용자가 입력한 비밀번호(user_password)가 데이터베이스에 저장된 암호화된 비밀번호(vo.getUser_password)와 일치하는지 확인합니다.
 				vo.setUser_pwd(""); // 보안적으로 사용
 				session.setAttribute("login_status", vo); // 비밀번호가 일치하면 사용자 정보를 세션에 login_status라는 이름으로 저장합니다.
+			
+			// 세션방문 확인
+			if(session.getAttribute("Visit") == null) {
+				// 방문기록이 없으면 방문횟수 증가
+				userService.updateVisitCount(dto.getUser_id());
+				session.setAttribute("Visit", true); // 방문기록추가
+				
+			}
+			
 			}else { // 비밀번호가 존재하지 않을경우  
 				msg = "failPW"; // 비밀번호가 일치하지 않으면 실패 메시지를 설정합니다.
 				url = "/user/login";  // 로그인 폼 주소로 리디렉션할 URL을 설정합니다.

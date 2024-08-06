@@ -17,7 +17,7 @@
           <a class="nav-link text-light" th:href="@{/cart/cart_list}">장바구니</a>
           
           <th:block th:if="${session.login_status != null}">
-          <a class="nav-link text-light" href="#">주문상품조회</a>
+          <a class="nav-link text-light" th:href="@{/orderinquiry/order_list}">주문상품조회</a>
           <a class="nav-link text-light" href="#">찜목록</a>
           <a class="nav-link text-light" th:href="@{/user/logout}">로그아웃</a>
           </th:block>

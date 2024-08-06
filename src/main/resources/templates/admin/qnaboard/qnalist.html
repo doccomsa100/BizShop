@@ -96,8 +96,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 									<span th:text="${adminqna.answer_date != null ? #dates.format(adminqna.answer_date, 'yyyy-MM-dd HH:mm:ss') : '대기'}"></span>
 								</td>
 								<td>
-									<span value="N" th:if="${adminqna.anscheck == 'N'}">답변대기</span>
-									<span value="Y" th:if="${adminqna.anscheck == 'Y'}">답변완료</span>
+									<span th:value="N" th:if="${adminqna.anscheck == 'N'}">답변대기</span>
+									<span th:value="Y" th:if="${adminqna.anscheck == 'Y'}">답변완료</span>
 								</td>
 								<td>
 									<button type="button" class="btn btn-dark" name="btn_qna_answer" th:data-qna_data="${adminqna.qna_idx}"><b>답변하기</b></button>

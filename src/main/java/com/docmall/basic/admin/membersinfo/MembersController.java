@@ -129,16 +129,14 @@ public class MembersController {
 	public void mem_mail_list(Criteria cri, String mtitle,Model model) {
 		
 		List<MembersVO> maillist = membersService.mem_mail_list(cri, mtitle);
-		
-		int totalcount = membersService.getMailListCount(cri,mtitle);
-		PageDTO pageDTO = new PageDTO(cri, totalcount);
-		
 		model.addAttribute("maillist", maillist);
-		model.addAttribute("pageMaker", pageDTO);
 		
-		
+		if(!maillist.isEmpty()) {
+			int totalcount = membersService.getMailListCount(cri,mtitle);
+			PageDTO pageDTO = new PageDTO(cri, totalcount);
+			model.addAttribute("pageMaker", pageDTO);
+		}
 	}
-	
 	
 	// 메일폼
 	@GetMapping("/mem_mail_form")
@@ -256,6 +254,19 @@ public class MembersController {
 		return entity;
 	}
 	
+	// 이메읿발송시 db에서 수신자정보 삭제
+	@PostMapping("/delete_recipients")
+	public ResponseEntity<String> delete_recipients (@RequestBody List<String> email) throws Exception{
+		ResponseEntity<String> entity = null;
+		
+		membersService.deletedbRecipientbyEmail(email);
+		entity = new ResponseEntity<String>(HttpStatus.OK);
+		
+		return entity;
+	}
+	
+	
+	
 	// 수신자메일리스트
 	@GetMapping("/email_list")
 	@ResponseBody
@@ -265,6 +276,19 @@ public class MembersController {
 		String[] emailList = membersService.getALLMemberMail();
 		return emailList;
 		
+	}
+	
+	// 체크된 메일삭제
+	@DeleteMapping("/delete_check_mail")
+	public ResponseEntity<String> delete_check_mail(@RequestParam List<Long> mail_idx) throws Exception {
+		ResponseEntity<String> entity = null;
+		
+		for(Long idx : mail_idx) {
+			membersService.deltetcheckmail(idx);
+		}
+		entity = new ResponseEntity<>("success",HttpStatus.OK);
+		
+		return entity;
 	}
 	
 	// CKEditor 상품설명 이미지 업로드

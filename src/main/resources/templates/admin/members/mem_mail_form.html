@@ -93,7 +93,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </div><!-- /.box-body -->
                   <div class="box-footer text-center">
                     <button type="button" id="btn_mail_save" class="btn btn-primary">메일내용 저장</button>
-                    <button type="button" id="btn_mail_send" class="btn btn-primary">메일발송</button>
                     <button type="button" id="btn_mail_list" class="btn btn-primary">목록</button>
                   </div><!-- /.box-footer -->
                 </form>
@@ -149,8 +148,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         	mailinfofrom.attr("action", "/admin/members/mem_mail_save");
         	mailinfofrom.submit();
         });
-        
-        // 메일보내기
         
         // 메일목록
         $("#btn_mail_list").on("click", function() {

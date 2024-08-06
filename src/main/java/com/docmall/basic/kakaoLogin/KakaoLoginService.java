@@ -40,6 +40,7 @@ public class KakaoLoginService {
 	@Value("${kakao.user.logout}")
 	private String kakaologout;
 	
+	
 	// 액세스 토큰을 받기위한 정보
 		// 주소: https://kauth.kakao.com/oauth/token 주소호출
 		// 요청방식: post
@@ -151,6 +152,7 @@ public class KakaoLoginService {
 		
 		
 	}
+	
 	
 	
 	

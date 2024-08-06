@@ -85,6 +85,7 @@ public class KakaoLoginController {
 			
 			String sns_email = kakaoUserInfo.getEmail();
 			
+			// 사용자 정보가 존재하는지 확인
 			String sns_login_type = userService.existsUserInfo(sns_email);
 			
 			if(userService.existsUserInfo(sns_email) == null && userService.sns_user_check(sns_email) == null) {

@@ -14,4 +14,5 @@ public class SNSUserDto {
 	private String name;
 	private String email;
 	private String sns_type;
+	
 }

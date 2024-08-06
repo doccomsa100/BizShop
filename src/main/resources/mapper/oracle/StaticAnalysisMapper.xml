@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.basic.admin.StaticAnalysis.StaticAnalysisMapper">
+
+	<select id="Monthlysalesstatus" parameterType="String" resultType="hashmap">
+	
+		SELECT 
+    		c.cat_name catgoryname_cd, sum(ot.item_amount * ot.item_price) salse_p 
+		FROM
+		    product_tbl p INNER JOIN order_det_tbl ot
+		ON
+		    p.pro_num = ot.pro_num
+		INNER JOIN
+		    (SELECT c1.cat_name,c2.cat_code FROM category_tbl c1, category_tbl c2 WHERE c2.cat_prtcode = c1.cat_code) c
+		ON
+		    p.cat_code = c.cat_code
+		INNER JOIN
+		    order_num_tbl o
+		ON
+		    o.order_num = ot.order_num
+		AND
+		    TO_CHAR(o.order_redate, 'YYYY/MM') = #{ordDate}    -- 날짜검색을 위해 작성
+		GROUP BY
+		    c.cat_name,TO_CHAR(o.order_redate, 'YYYY/MM')
+		ORDER BY
+		    c.cat_name
+	</select>
+	
+
+
+
+</mapper>

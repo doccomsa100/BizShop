@@ -111,6 +111,14 @@
 
 	</delete>
 	
+	<delete id="deletedbRecipientbyEmail" parameterType="String">
+			
+		DELETE FROM 
+	   		recipient_emails
+	   WHERE 
+	   		email = #{email}
+	
+	</delete>
 	
 		
 	<select id="getReceiverList" parameterType="String" resultType="ReceiverVO">
@@ -213,6 +221,15 @@
 			mailmng_tbl
 		WHERE
 			mail_idx = #{idx}
+	</delete>
+	
+	<delete id="deltetcheckmail" parameterType="Long">
+	
+		DELETE FROM
+			mailmng_tbl
+		WHERE
+			mail_idx = #{idx}
+	
 	</delete>
 	
 

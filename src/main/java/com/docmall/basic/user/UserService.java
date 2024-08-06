@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.qnaboard.QnaBoardVO;
@@ -33,6 +34,11 @@ public class UserService {
 	public UserVo login(String user_id) {
 		return userMapper.login(user_id);
 	}
+	
+	// 방문횟수증가
+    public void updateVisitCount(String user_id) {
+    	userMapper.updateVisitCount(user_id);
+    }
 	
 	// 아이디찾기
 	public String idfind(String user_name,String user_email) {

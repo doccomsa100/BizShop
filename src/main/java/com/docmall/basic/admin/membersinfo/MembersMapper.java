@@ -27,6 +27,9 @@ public interface MembersMapper {
 	// 기존수신자 삭제
 	void deleteRecipientByEmail(String email);
 	
+	// 이메일발송시 수신자정보 삭제
+	void deletedbRecipientbyEmail(String email);
+	
 	// 등록된수신자목록
 	List<ReceiverVO> getReceiverList(String email);
 	
@@ -50,5 +53,8 @@ public interface MembersMapper {
 	
 	// 메일삭제
 	void maildelete(int idx);
+	
+	// 체크된메일삭제
+	void deltetcheckmail(Long idx);
 	
 }
