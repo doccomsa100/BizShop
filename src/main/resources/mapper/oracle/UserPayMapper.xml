@@ -35,5 +35,20 @@
 	
 	
 	</update>
+	
+	<update id="order_pay_modify" parameterType="map">
+	
+		UPDATE
+			userpay
+		SET
+			pay_status = #{pay_status}
+		WHERE
+			order_num = #{order_num}
+	
+	</update>
+	
+	
+	
+	
 
 </mapper>

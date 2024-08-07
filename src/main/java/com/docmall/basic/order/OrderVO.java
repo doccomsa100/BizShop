@@ -24,4 +24,5 @@ public class OrderVO {
 	private String order_req;        // 요청사항
 	private String order_admin_memo;	 // 관리자 메모저장용
 	private Date   order_redate;     // 주문날짜
+	private String order_status;     // 배송현황 기본값 = 배송준비중
 }

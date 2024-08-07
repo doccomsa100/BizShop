@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.docmall.basic.admin.order.AdminOrderService;
@@ -48,7 +50,7 @@ public class OrderInquiryController {
 			,Model model) throws Exception {
 		
 		log.info("Criteria" +cri);
-		cri.setAmount(5);
+		cri.setAmount(2);
 		
 		// 주문리스트
 		List<OrderVO> order_list = orderInquiryService.order_list(cri,start_date,end_date);
@@ -101,6 +103,18 @@ public class OrderInquiryController {
 		return entity;
 		
 	}
+	
+	// 입금상태 변경
+	@PostMapping("/order_pay_modify")
+	public ResponseEntity<String> order_pay_modify(@RequestBody UserPayVO vo) throws Exception {
+		ResponseEntity<String> entity = null;
+		
+		userPayService.order_pay_modify(vo.getOrder_num(),"완료");
+		
+		entity = new ResponseEntity<String>("success", HttpStatus.OK);
+		return entity;
+	}
+	
 	
 	
 	

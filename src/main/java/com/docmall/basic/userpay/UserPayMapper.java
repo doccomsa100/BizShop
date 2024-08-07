@@ -1,5 +1,7 @@
 package com.docmall.basic.userpay;
 
+import org.apache.ibatis.annotations.Param;
+
 public interface UserPayMapper {
 	
 	// 결제내용 삽입
@@ -10,5 +12,8 @@ public interface UserPayMapper {
 	
 	// 결제테이블의 총금액변경
 	void pay_tot_price_change(Long order_num);
+	
+	// 입금현황변경
+	void order_pay_modify(@Param("order_num") Long order_num,@Param("pay_status") String pay_status);
 
 }

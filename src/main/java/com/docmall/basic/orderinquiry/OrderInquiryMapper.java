@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.docmall.basic.admin.order.AdminOrderVO;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.order.OrderVO;
+import com.docmall.basic.userpay.UserPayVO;
 
 public interface OrderInquiryMapper {
 
@@ -21,5 +22,8 @@ public interface OrderInquiryMapper {
 	
 	// 주문상품정보
 	List<OrderInQuiryVO> order_user_info(Long order_num);
+	
+	// 무통장 완료로 변경
+	void order_pay_modify(UserPayVO vo);
 
 }
