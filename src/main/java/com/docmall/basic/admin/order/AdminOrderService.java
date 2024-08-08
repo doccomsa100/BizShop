@@ -2,6 +2,7 @@ package com.docmall.basic.admin.order;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,4 +61,5 @@ public class AdminOrderService {
 	public void order_base_modify(OrderVO vo) {
 		adminOrderMapper.order_base_modify(vo);	
 		}
+	
 }

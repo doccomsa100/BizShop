@@ -29,4 +29,10 @@ public interface AdminOrderMapper {
 	
 	// 주문테이블 주문금액 총금액변경.
 	void order_tot_price_change(Long order_num);
+	
+	// 입금대기 리스트
+	List<OrderVO> getPendingOrders(@Param("cri") Criteria cri,@Param("start_date") String start_date,@Param("end_date") String end_date,@Param("pay_status") String pay_status );
+		
+	// 입금대기리스트 총새수
+	int getPendingOrdersCount(@Param("cri") Criteria cri,@Param("start_date") String start_date,@Param("end_date") String end_date,@Param("pay_status") String pay_status );
 }

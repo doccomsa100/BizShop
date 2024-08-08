@@ -540,6 +540,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 					if(result == 'success') {
 					alert("기본정보가 수정되었습니다.");
 					order_detail_info();
+					location.reload(true);
+					
 				}
 			},
 			error:function() {
