@@ -61,7 +61,7 @@ public class MembersController {
 	@GetMapping("/member_list")
 	public void member_list(Criteria cri, Model model) {
 		
-		cri.setAmount(20);
+		cri.setAmount(Constants.ADMIN_MEMBER_LIST_AOMUNT);
 		
 		List<UserVo> list = membersService.member_list(cri);
 		log.info("회원목록 데이터: " + list);

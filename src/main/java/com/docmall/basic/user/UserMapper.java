@@ -18,9 +18,6 @@ public interface UserMapper {
 	// 로그인
 	UserVo login(String user_id);
 	
-	// 방문횟수증가
-    void updateVisitCount(String user_id);
-	
 	// 아이디찾기
 	String idfind(@Param("user_name") String user_name, @Param("user_email") String user_email);
 	

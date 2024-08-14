@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.docmall.basic.admin.StaticAnalysis.StaticAnalysisService;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.common.util.FileManagerUtils;
@@ -38,6 +39,8 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 	
 	private final EmailService emailService;
+	
+	private final StaticAnalysisService staticAnalysisService;
 	
 	//상품이미지 업로드 경로
 	@Value("${file.product.image.user}")
@@ -109,13 +112,6 @@ public class UserController {
 				vo.setUser_pwd(""); // 보안적으로 사용
 				session.setAttribute("login_status", vo); // 비밀번호가 일치하면 사용자 정보를 세션에 login_status라는 이름으로 저장합니다.
 			
-			// 세션방문 확인
-			if(session.getAttribute("Visit") == null) {
-				// 방문기록이 없으면 방문횟수 증가
-				userService.updateVisitCount(dto.getUser_id());
-				session.setAttribute("Visit", true); // 방문기록추가
-				
-			}
 			
 			}else { // 비밀번호가 존재하지 않을경우  
 				msg = "failPW"; // 비밀번호가 일치하지 않으면 실패 메시지를 설정합니다.
@@ -125,6 +121,8 @@ public class UserController {
 			msg = "failID"; // 아이디가 존재하지 않음을 나타내는 실패 메시지를 설정합니다.
 			url = "/user/login";  // 로그인 폼 주소
 		}
+		
+		
 		
 		rttr.addFlashAttribute("msg",msg); 
 		

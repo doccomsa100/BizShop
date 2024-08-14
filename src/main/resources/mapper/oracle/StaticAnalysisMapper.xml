@@ -26,7 +26,38 @@
 		    c.cat_name
 	</select>
 	
+	<insert id="insertVisttorLog" parameterType="VisitorLogVO">
+	
+		INSERT INTO
+			visitor_log(vi_id, user_id, session_id,is_member)
+		VALUES(SEQ_VISITOR_ID.NEXTVAL,#{user_id},#{session_id},#{is_member})
+	
+	</insert>
 
-
+	<update id="updateVisitorLogToMember" parameterType="map">
+		
+		UPDATE 
+			visitor_log
+		SET
+			user_id = #{user_id}, is_member = 'Y'
+		WHERE
+			session_id = #{session_id} AND is_member = 'N'
+	</update>
+	
+	<select id="getVisitCount" resultType="hashmap" parameterType="String">
+		SELECT
+			CASE WHEN is_member = 'Y' THEN '회원' ELSE '비회원' END AS memberType,
+			TO_CHAR(vi_date, 'YYYY/MM') AS visitDateTime, -- 날짜 포함한 형식
+			EXTRACT(MONTH FROM vi_date) AS month, -- MONTH 필드 추가
+			COUNT(*) AS count
+		FROM
+			visitor_log
+		WHERE
+			TO_CHAR(vi_date, 'YYYY/MM') = #{UserDate}
+		GROUP BY
+			is_member,TO_CHAR(vi_date, 'YYYY/MM'), EXTRACT(MONTH FROM vi_date)
+		ORDER BY
+			visitDateTime
+	</select>
 
 </mapper>

@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.docmall.basic.admincategory.AdminCategoryService;
 import com.docmall.basic.admincategory.AdminCategoryVO;
+import com.docmall.basic.common.constants.Constants;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.common.util.FileManagerUtils;
@@ -151,7 +152,7 @@ public class AdminProductController {
 	@GetMapping("pro_list")
 	public void pro_list(Criteria cri, Model model) throws Exception {
 		
-		cri.setAmount(5);
+		cri.setAmount(Constants.ADMIN_PRODUCT_LIST_AOMUNT);
 		
 		List<AdminProductVO> pro_list = adminProductService.pro_list(cri);
 		pro_list.forEach(vo -> {

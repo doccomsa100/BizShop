@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.docmall.basic.common.constants.Constants;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
 import com.docmall.basic.common.util.FileManagerUtils;
@@ -46,7 +47,7 @@ public class AdminOrderController {
 			,Model model) throws Exception {
 		
 		log.info("Criteria" +cri);
-		cri.setAmount(5);
+		cri.setAmount(Constants.ADMIN_ORDER_LIST_AOMUNT);
 		
 		// 주문리스트
 		List<OrderVO> order_list = adminOrderService.order_list(cri,start_date,end_date);

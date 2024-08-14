@@ -35,11 +35,6 @@ public class UserService {
 		return userMapper.login(user_id);
 	}
 	
-	// 방문횟수증가
-    public void updateVisitCount(String user_id) {
-    	userMapper.updateVisitCount(user_id);
-    }
-	
 	// 아이디찾기
 	public String idfind(String user_name,String user_email) {
 		return userMapper.idfind(user_name,user_email);
