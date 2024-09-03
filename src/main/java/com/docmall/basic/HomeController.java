@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.docmall.basic.admin.StaticAnalysis.StaticAnalysisService;
 import com.docmall.basic.admincategory.AdminCategoryService;
 import com.docmall.basic.admincategory.AdminCategoryVO;
+import com.docmall.basic.user.SNSUserDto;
 import com.docmall.basic.user.UserVo;
 
 import jakarta.servlet.http.HttpSession;
@@ -49,5 +50,6 @@ public class HomeController {
 		}
 		
 		return "index";
+		
 	}
 }

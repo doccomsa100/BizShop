@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j // 로그출력
 @Configuration // bean등록작업  스프링이 시작되면서 생성자를 자동으로 생성되어, bean을 만들어준다.
-@PropertySource("classpath:mail/email.properties")
+@PropertySource("classpath:application-private.properties")
 public class EmailConfg {
 
 	public EmailConfg() throws Exception {

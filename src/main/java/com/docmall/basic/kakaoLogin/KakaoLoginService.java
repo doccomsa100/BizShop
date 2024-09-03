@@ -124,34 +124,53 @@ public class KakaoLoginService {
 	
 	// 카카오 로그아웃  헤더는 있고, 파라미터는 없는 경우.
 	// 헤더 Authorization: Bearer ${ACCESS_TOKEN}
-	public void kakaologout(String accessToken) throws JsonProcessingException {
-		
-		// Http Header 생성.
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization","Bearer " + accessToken);
-		headers.add("Content-type", "application/x-www-form-urlencoded");
-		
-		// Http 요청작업
-		HttpEntity<MultiValueMap<String, String>> kakaoLogoutRequest = new HttpEntity<>(headers);
+//	public void kakaologout(String accessToken) throws JsonProcessingException {
+//		
+//		// Http Header 생성.
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Authorization","Bearer " + accessToken);
+//		headers.add("Content-type", "application/x-www-form-urlencoded");
+//		
+//		// Http 요청작업
+//		HttpEntity<MultiValueMap<String, String>> kakaoLogoutRequest = new HttpEntity<>(headers);
+//	
+//		// Http 요청하기
+//		RestTemplate restTemplate = new RestTemplate();
+//		ResponseEntity<String> response = restTemplate.exchange(kakaologout, HttpMethod.POST, kakaoLogoutRequest, String.class);
+//		
+//		String responseBody = response.getBody();
+//		log.info("responseBody" + responseBody);
+//	
+//		// JSON문자열을 Java객체로 역직렬화 하거나 Java객체를 JSON으로 직렬화 할 때 사용하는 Jackson라이브러리의 클래스이다.
+//		// ObjectMapper 생성 비용이 비싸기때문에 bena/static 으로 처리하는 것이 성능에 좋다.
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		JsonNode jsonNode = objectMapper.readTree(responseBody);
+//		
+//		Long id = jsonNode.get("id").asLong();
+//		
+//		log.info("id: " + id);
+//		
+//		
+//	}
 	
-		// Http 요청하기
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(kakaologout, HttpMethod.POST, kakaoLogoutRequest, String.class);
-		
-		String responseBody = response.getBody();
-		log.info("responseBody" + responseBody);
-	
-		// JSON문자열을 Java객체로 역직렬화 하거나 Java객체를 JSON으로 직렬화 할 때 사용하는 Jackson라이브러리의 클래스이다.
-		// ObjectMapper 생성 비용이 비싸기때문에 bena/static 으로 처리하는 것이 성능에 좋다.
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(responseBody);
-		
-		Long id = jsonNode.get("id").asLong();
-		
-		log.info("id: " + id);
-		
-		
-	}
+	public void kakaologout(String accessToken) {
+        // Http Header 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+        // Http 요청 파라미터 설정
+        String url = String.format("%s?client_id=%s&logout_redirect_uri=%s", kakaologout, clientId, redirectUri);
+
+        // Http 요청 작업
+        HttpEntity<String> kakaoLogoutRequest = new HttpEntity<>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, kakaoLogoutRequest, String.class);
+
+        // 응답 처리
+        String responseBody = response.getBody();
+        log.info("Response Body: " + responseBody);
+    }
 	
 	
 	

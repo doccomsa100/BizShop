@@ -176,7 +176,7 @@ public class AdminProductController {
 	
 	// 상품수정폼
 	@GetMapping("/pro_modify")
-	public void pro_modify(@ModelAttribute("cri")Criteria cri, Integer pro_num, Model model) throws Exception {
+	public void pro_modify(Integer pro_num, Model model) throws Exception {
 	
 		// 1차카테고리 목록(편집 페이지에서 현재 편집 중인 상품이 어떤 1차 카테고리에 속하는지 표시해주기 위함) 
 		List<AdminCategoryVO> cate_list = adminCategoryService.getFirstCategoryList();

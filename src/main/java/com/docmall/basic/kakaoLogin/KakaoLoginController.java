@@ -111,8 +111,9 @@ public class KakaoLoginController {
 		if(accessToken != null && !"".equals(accessToken)) {
 			try {
 				kakaoLoginService.kakaologout(accessToken);
-			}catch (JsonProcessingException ex) {
-				throw new RuntimeException(ex);
+			}catch (Exception ex) {
+				log.error("로그아웃 처리 중 오류 발생", ex);
+	            throw new RuntimeException("로그아웃 처리 중 오류가 발생했습니다.", ex);
 			}
 			
 			session.removeAttribute("kakao_status");

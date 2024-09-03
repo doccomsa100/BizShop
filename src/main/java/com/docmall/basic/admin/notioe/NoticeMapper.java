@@ -15,5 +15,11 @@ public interface NoticeMapper {
 	// 작성글 저장
 	void insert_notice(NoticeVO vo);
 	
+	// 작성글 수정폼
+	NoticeVO getNoticeinfo(Integer idx);
+	
+	// 작성글 수정저장
+	void update_notice(NoticeVO vo);
+	
 
 }

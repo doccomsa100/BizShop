@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.docmall.basic.admin.AdminVO;
 import com.docmall.basic.common.constants.Constants;
 import com.docmall.basic.common.dto.Criteria;
 import com.docmall.basic.common.dto.PageDTO;
@@ -24,6 +28,7 @@ import com.docmall.basic.common.util.FileManagerUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,9 +57,9 @@ public class NoticeController {
 		model.addAttribute("noticelist", Noticelist);
 		
 		// 전체데이터 개수
+		
 		int notitotal = noticeService.getNoticeCount(cri);
 		PageDTO pageDTO = new PageDTO(cri, notitotal);
-		
 		log.info("페이징 기능데이터: " + pageDTO);
 		model.addAttribute("pageMaker", pageDTO);
 		
@@ -68,13 +73,35 @@ public class NoticeController {
 	
 	// 작성글 저장
 	@PostMapping("/notice_save")
-	public ResponseEntity<String> notice_save(@RequestBody NoticeVO vo) {
+	public ResponseEntity<String> notice_save(@RequestBody NoticeVO vo) throws Exception{
 		ResponseEntity<String> entity = null;
 		
-		
+		noticeService.insert_notice(vo);
+		log.info("저장내용: " + vo);
+		entity = new ResponseEntity<String>("success",HttpStatus.OK);
 		
 		return entity;
 	}
+	
+	// 작성글 수정폼
+	@GetMapping("/notice_modify")
+	public void notice_modify(@RequestParam("idx")Integer idx,Model model) throws Exception {
+		 log.info("수정할 idx: " + idx); // 로그로 idx 값 출력
+		NoticeVO vo = noticeService.getNoticeinfo(idx);
+		log.info("수정idx: " + vo);
+		model.addAttribute("notice", vo);
+	}
+	
+	// 작성글 수정저장
+	@PostMapping("/notice_modify")
+	public String notice_modify(NoticeVO vo,Criteria cri) throws Exception {
+		
+		noticeService.update_notice(vo);
+		
+		return "redirect:/admin/notice/notice_list" + cri.getListLink();
+		
+	}
+	
 
 	// CKEditor 상품설명 이미지 업로드
 	// MultipartFile upload : CKeditor의 업로드탭에서 나온 파일첨부 <input type="file" name="upload"> 을 참조함.

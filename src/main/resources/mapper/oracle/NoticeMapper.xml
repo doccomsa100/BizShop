@@ -6,7 +6,6 @@
 		<id property="idx" column="no_idx"/>
 		<result property="title" column="no_title"/>
 		<result property="content" column="no_content"/>
-		<result property="writer" column="no_writer"/>
 		<result property="readcount" column="no_readcount"/>
 		<result property="noticlass" column="no_class"/>
 		<result property="regdate" column="no_regdate"/>
@@ -39,11 +38,11 @@
 	<select id="NoticeList" parameterType="Criteria" resultMap="NoticeVOMap">
 
 	SELECT
-		n.no_idx, n.no_title, n.no_content, n.no_writer, n.no_readcount,n.no_class ,n.no_regdate,a.admin_name
+		no_idx, no_title, no_content, no_readcount,no_class ,no_regdate
 	FROM
 		(
-		SELECT /*+ INDEX_DESC(notioe PK_NOTIOE_IDX) */
-			ROWNUM AS RN, no_idx, no_title, no_content, no_writer, no_readcount,no_class ,no_regdate
+		SELECT /*+ INDEX_ASC(notioe PK_NOTIOE_IDX) */
+			ROWNUM AS RN, no_idx, no_title, no_content, no_readcount,no_class ,no_regdate
 		FROM
 			notioe
 		WHERE
@@ -51,11 +50,8 @@
 		<![CDATA[
 		ROWNUM <= (#{pageNum} * #{amount}) -- 페이지번호 * 페이지별 출력건수
 		]]>
-		) n
-		JOIN
-			master_tbl a
-		ON
-			n.no_writer = a.admin_id	
+		
+		)
 		WHERE
 			RN > (#{pageNum} - 1) * #{amount} -- (페이지번호 -1) * 페이지별 출력건수
 </select>
@@ -73,12 +69,45 @@
 </select>
 
 <insert id="insert_notice" parameterType="NoticeVO">
+	
 	INSERT INTO
-		notioe(no_idx, no_title, no_content, no_writer, no_readcount,no_class)
+		notioe(no_idx, no_title, no_content,no_readcount,no_class)
 	VALUES
-		(SEQ_NOTIOE_IDX.NEXTVAL, #{idx},#{title},#{content},#{writer},#{readcount},#{noticlass})
+		(
+			SEQ_NOTIOE_IDX.NEXTVAL,
+			#{title},
+			#{content},
+			#{readcount}, 
+            #{noticlass}
+           
+        )
 </insert>
 
+<select id="getNoticeinfo" parameterType="Integer" resultMap="NoticeVOMap">
+		
+		SELECT 
+			no_title, no_content, no_class
+		FROM
+			notioe
+		WHERE
+			no_idx = #{idx}
 
+</select>
+
+<update id="update_notice" parameterType="NoticeVO">
+	
+	UPDATE 
+		notioe
+	SET
+		no_title = #{title}, 
+		no_content = #{content}, 
+		no_class = #{noticlass},
+		no_regdate = sysdate
+	WHERE
+		no_idx = #{idx}
+
+
+
+</update>
 
 </mapper>
